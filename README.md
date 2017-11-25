@@ -1,1 +1,3 @@
-# rov core
+# rov-core
+
+Internal ROV software
