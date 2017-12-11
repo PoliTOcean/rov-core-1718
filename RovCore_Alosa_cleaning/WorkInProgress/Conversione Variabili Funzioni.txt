@@ -1,0 +1,26 @@
+VARIABILI ORIGINALI          VARIABILI FUNZIONI 
+                    AlosaON()
+pitchAngle              =    paF
+rollAngle               =    raF
+kAng                    =    kagF
+pitch                   =    ptcF
+roll                    =    rollF
+joystickValue[]         =    jVF[]
+ANG_MUL                 =    AMF
+vertical[]              =    vrt[]
+MAX_IMU                 =    MxIF
+val                     =    vlF
+valL                    =    vlLF
+valR                    =    vlRF
+H_MUL                   =    hmlF
+sign                    =    sngF
+pivSpeed                =    pvSF
+PIV_LIM                 =    pivLmF
+fPivScale               =    fpvSF
+V_MUL                   =    VmlF
+savePressure            =    SvPrF
+valUD                   =    vlUDF
+reqPress                =    rPF
+curPress                =    cPF
+kDep                    =    kDpF
+MAX_JOY                 =    MxJF
