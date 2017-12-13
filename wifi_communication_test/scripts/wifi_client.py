@@ -2,6 +2,7 @@
 
 import rospy
 from politocean.srv import wifi
+import matplotlib.pyplot as plt
 
 def wifi_client():
     rospy.wait_for_service('wifi_read')
@@ -14,4 +15,10 @@ def wifi_client():
 
 if __name__ == "__main__":
     print('Requesting data')
-    print(wifi_client().data)
+    data = wifi_client()
+    plt.plot(data.x, data.y)
+    plt.xlabel('Time')
+    plt.ylabel('Amplitude')
+    plt.title('Sismograph')
+    plt.grid()
+    plt.show()

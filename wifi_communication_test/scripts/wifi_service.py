@@ -3,38 +3,40 @@
 import rospy
 from politocean.srv import wifi
 from std_msgs.msg import String
-from wifi import Cell, Scheme
 import requests
 
 def read_data(req):
     global err_pub
     
-    url_get='http://192.168.4.1/test'
-
-    nets = list(Cell.all('wlp2s0')) # check the hardware
-    if nets[0].ssid != 'wifi':
-        mess='Please connect to \'wifi\''
-        err_pub.publish(mess)
-        rospy.loginfo(mess)
-        return 0 # check
+    url_get='http://192.168.4.1/test_new'
 
     try:
-        data = requests.get(url_get)
-    except requests.exceptions.ConnectionError as conn_err:
-        mess='Errore di connessione'
-        err_pub.publish(mess)
+        data = requests.get(url_get, timeout=1)
+    except requests.exceptions.ConnectionError:
+        mess='Cenection error'
         rospy.loginfo(mess)
+        err_pub.publish(mess)
+        return [[0], [0]]
 
-    try:
-        rospy.loginfo(data.text)
-        return int(data.text)
-    except NameError as ne: # data does not exist
-        pass # already advised, coming from 'Errore di connessione'
+    rospy.loginfo('Data readed')
+    
+    data_div = data.text.split('\n')
+        
+    x = []
+    y = []
+    
+    for couple in data_div:
+        [X,Y] = couple.split()
+        x.append(float(X))
+        y.append(float(Y))
+
+    return [x, y]
 
 def wifi_server():
+    global err_pub
+    
     rospy.init_node('wifi_server', anonymous=False)
     s = rospy.Service('wifi_read', wifi, read_data)
-    global err_pub
     err_pub = rospy.Publisher('errors', String, queue_size=1)
     rospy.spin()
 
