@@ -13,7 +13,7 @@ def read_data(req):
     try:
         data = requests.get(url_get, timeout=1)
     except requests.exceptions.ConnectionError:
-        mess='Cenection error'
+        mess='Connection error'
         rospy.loginfo(mess)
         err_pub.publish(mess)
         return [[0], [0]]
