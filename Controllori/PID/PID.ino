@@ -16,7 +16,7 @@ void PIDcal(float setpoint,float actual_value)
   static float pre_error = 0;         // global
   static float integral = 0;          // global
   float error;
-  float derivative;
+  float derivative;                   // global
   float output;                       // global
 
 //CaculateP,I,D
@@ -29,6 +29,7 @@ if(abs(error)> epsilon)
    integral = integral + error*dt;
 }
 derivative = (error - pre_error)/dt;
+
 output = Kp*error + Ki*integral + Kd*derivative;
 
 //Saturation Filter
@@ -36,7 +37,7 @@ if(output> MAX)
 {
 output= MAX;
 }
-else if(output< MIN);
+else if(output< MIN)
 {
 output= MIN;
 }
