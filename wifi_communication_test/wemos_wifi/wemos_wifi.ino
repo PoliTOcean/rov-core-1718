@@ -23,6 +23,11 @@ void handleTest() {
   server.send(200, "text/plain", message);
 }
 
+void handleTestNew() {
+  char message[2];
+  server.send(200, "text/plain", "0 0\n1.1 0\n1.3 4.4\n1.4 -4.3\n1.5 0\n2 0\n2.2 6.8\n2.4 -7\n2.6 0\n3 0\n3.1 1.6\n3.2 -1.6\n3.3 0\n3.9 0");
+}
+
 void setup() {
 	delay(1000);
 	Serial.begin(115200);
@@ -36,6 +41,7 @@ void setup() {
 	Serial.println(myIP);
 	server.on("/", handleRoot);
   server.on("/test", handleTest);
+  server.on("/test_new", handleTestNew);
 	server.begin();
 	Serial.println("HTTP server started");
 }
