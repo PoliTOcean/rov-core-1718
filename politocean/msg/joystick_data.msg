@@ -1,0 +1,17 @@
+bool left
+bool up
+bool down
+bool right
+bool l1
+bool l2
+bool r1
+bool r2
+bool select
+bool start
+bool l3
+bool r3
+int8 rx
+int8 ry
+int8 ly
+int8 lx
+int8 check
