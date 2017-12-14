@@ -146,9 +146,9 @@ void loop() {
     data[5] = Wire.read(); 
   }
   // Convert the data
-  float xGyro = data[0] * 256 + data[1] + 50;
-  float yGyro = data[2] * 256 + data[3] - 28.5;
-  float zGyro = data[4] * 256 + data[5] + 5.5;
+  float xGyro = (data[0] * 256 + data[1] + 50)*1.285;
+  float yGyro = (data[2] * 256 + data[3] - 28.5)*1.2;
+  float zGyro = (data[4] * 256 + data[5] + 5.5)*0.86;
 
   float accData[]={xAccl,yAccl,zAccl};
   float gyroData[]={xGyro,yGyro,zGyro};
