@@ -6,9 +6,12 @@ wifi_client.py è un client (come dice il nome), lanciato senza argomenti richie
 wifi_service.py è un service, aspetta una richiesta e risponde con il dato letto tramite wifi
 wifi_publicher.py è un nodo che continua a pubblicare un UInt8 letto da wifi sul topic 'wifi_data'
 
-TUTTI i codici attualmente leggono un intero all'indirizzo 192.168.4.1/test
+Il publicher legge un intero all'indirizzo 192.168.4.1/test
+Il service legge una tabella di valori (x,y) all'indirizzo 192.168.4.1/test_new
 
 Il codice in Arduino è testato su una scheda WeMos D1 R2,(non assicuro il funzionamento su altre schede)
-Crea una rete wifi chiamata wifi (password: password) e all'indirizzo 192.168.4.1/test viene pubblicata una variabile random compresa tra 0 e 100
+Crea una rete wifi chiamata wifi (password: password)
+All'indirizzo 192.168.4.1/test viene pubblicata una variabile random compresa tra 0 e 100
+All'indirizzo 192.168.4.1/test_new viene pubblicata la tabella di valori (x,y) riportata nel manuale della competizione
 
 Tutti gli errori di connessione o di lettura dati vengono pubblicati sul topic 'errors'
