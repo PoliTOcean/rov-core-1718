@@ -5,7 +5,6 @@
 import rospy
 from std_msgs.msg import UInt8
 from std_msgs.msg import String
-from wifi import Cell, Scheme
 import requests
 
 def wifi_publisher():
@@ -15,27 +14,21 @@ def wifi_publisher():
     rate = rospy.Rate(10) # 10hz
     
     url_get='http://192.168.4.1/test'
-
-    nets = list(Cell.all('wlp2s0')) # check the hardware
-    if nets[0].ssid != 'wifi':
-        mess='Please connect to \'wifi\''
-        err_pub.publish(mess)
-        rospy.loginfo(mess)
-        return 1
     
     while not rospy.is_shutdown():
         try:
-            data = requests.get(url_get)
-        except requests.exceptions.ConnectionError as conn_err:
-            mess='Errore di connessione'
-            err_pub.publish(mess)
+            data = requests.get(url_get, timeout=1)
+        except requests.exceptions.ConnectionError:
+            mess='Connection error'
             rospy.loginfo(mess)
+            err_pub.publish(mess)
+            return 0
+
+        rospy.loginfo('Data readed')
             
-        try:
-            rospy.loginfo(data.text)
-            wifi_pub.publish(int(data.text))
-        except NameError as ne: # data does not exist
-            pass # already advised, coming from 'Errore di connessione'
+        rospy.loginfo(data.text)
+        wifi_pub.publish(int(data.text))
+
         rate.sleep()
 
 if __name__ == '__main__':
