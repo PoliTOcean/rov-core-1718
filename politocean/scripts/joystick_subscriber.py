@@ -23,7 +23,9 @@ check = 0
 #function that receives joystick data
 def joystickCallback(data):
     global check
-    check = data.check #save check
+    check++; #update check
+    if(check>=1000)
+        check=0;    #reset check
     #prepare command string
     comm=""
     if data.start:
