@@ -6,4 +6,4 @@ La cartella "politocean" è il package di ROS con gli script necessari per farlo
 
 Tutto ciò che non è il codice da mettere direttamente su Arduino o su ROS, è inserito dentro la cartella "usefull_stuff".
 
-Enjoy.
+Enjoy!
