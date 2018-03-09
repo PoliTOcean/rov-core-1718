@@ -24,7 +24,7 @@ check = 0
 def joystickCallback(data):
     global check
     check+=1; #update check
-    if(check>=1000)
+    if(check>=1000):
         check=0;    #reset check
     #prepare command string
     comm=""
