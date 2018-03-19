@@ -31,6 +31,7 @@ sensors_pub = rospy.Publisher('sensors', sensors_data, queue_size=3)
 atmega=None
 ready=False #tell if ATMega is enabled
 received = False #tell if ATMega is sending something (or if it's able to receive)
+ticGUI = 0
 
 #function called when received something over components topic
 def checkATMega(data):
@@ -47,12 +48,19 @@ comp_sub = rospy.Subscriber('components', component_data, checkATMega)
 #take commands and send to ATMega
 def sendCommand(data):
     global received
+    global ticGUI
     data = str(data).upper() #transform all the string uppercase
-    if "W" in str(data): #awake command. It's for the ROV in general, not for the ATMega
+    data = str(data).replace('DATA: ', '').encode()
+
+    ticGUI = timeit.default_timer() #received something from GUI, restart timer
+
+    if data=="A":   #GUI awake command. Don't do anything
+        return
+    if data=="W":   #ROV awake check command. It's for the ROV in general, not for the ATMega
         publishMessages(NODE.ROV, "???")
     elif ready: #if ready, write on the Serial
         try:
-            atmega.write("/ "+str(data).replace('DATA: ', '').encode()+" \\")
+            atmega.write("/ "+data+" \\")
             received = True
         except Exception as e:
             publishErrors(NODE.ROV, "Unable to write on ATMega: "+str(e))
@@ -137,6 +145,7 @@ def main():
     signal.signal(signal.SIGTERM, exit_signal)
     global atmega
     global received
+    global ticGUI
 
     errMessInit() #init topics
 
@@ -155,7 +164,7 @@ def main():
 
     atmega = connectToATMega()
 
-    tic = timeit.default_timer() #set the timer
+    tic = ticGUI = timeit.default_timer() #set the timer
     received=False
     while not rospy.is_shutdown() and atmega is not None:
         try: #try to read from atmega
@@ -180,6 +189,10 @@ def main():
                 publishErrors(NODE.ROV, "ATMega is not responding")
                 publishComponent(NODE.ROV, ID.ATMEGA, STATUS.BUSY)
             received = False #set to false to see if it will respond in next 3 seconds
+
+        #if it hasn't received anything from GUI for more than two seconds
+        if timeit.default_timer()-ticGUI >= 2:
+            sendCommand("SSS")    #send a STOP SIGNAL
 
     exit() #call custom exit function
 
