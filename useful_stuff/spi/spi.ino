@@ -6,8 +6,6 @@ void setup (void)
   // have to send on master in, *slave out*
   pinMode(MISO, OUTPUT);
 
-  pinMode(9, OUTPUT);
-
   // turn on SPI in slave mode
   cli();
   SPCR = 0b11000000;
