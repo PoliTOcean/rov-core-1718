@@ -14,7 +14,7 @@ options = {
            }
 
 def reset():
-    smbus.write_byte(adg_addr, 0x00)
+    bus.write_byte(adg_addr, 0x00)
 
 def setBit(v, index, x):
   """Set the index:th bit of v to 1 if x is truthy, else to 0, and return the new value."""
@@ -25,24 +25,27 @@ def setBit(v, index, x):
   return v 
 
 def ch(channel): #assume input is 1-8 -> 0-7
-    channel -=1
+    channel = channel-1
     
     if channel < 0:
         channel = 0
     elif channel > 7:
         channel = 7
+        
+    return channel
     
 
 def writeChannel(channel, state):
-    value = smbus.read_byte(adg_addr)
+    value = bus.read_byte(adg_addr)
     value = setBit(value, ch(channel), state)
-    smbus.write_byte(adg_addr, value)
+    bus.write_byte(adg_addr, value)
 
 bus = smbus.SMBus(1)
 
 reset()
 
-mode = input("Scegliere modalità (1:x, x = 1, 2, 4, 8, 16, 32)")
+mode = input("Scegliere modalita (1:x, x = 1, 2, 4, 8, 16, 32) ")
+
 writeChannel(0, options[mode][0])
 writeChannel(1, options[mode][1])
 writeChannel(2, options[mode][2])
