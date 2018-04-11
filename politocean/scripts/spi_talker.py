@@ -43,7 +43,7 @@ def joystickButtCallback(data):
         mode = 0.3
     
     for i in range(8):
-        comm[3] += bitArray[i]<<i
+        comm[3] += bitArray[i]<<1
         
 def joystickAxisCallback(data):
     global comm
