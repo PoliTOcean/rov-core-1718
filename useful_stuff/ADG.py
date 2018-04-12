@@ -46,10 +46,10 @@ reset()
 
 mode = input("Scegliere modalita (1:x, x = 1, 2, 4, 8, 16, 32) ")
 
-writeChannel(0, options[mode][0])
-writeChannel(1, options[mode][1])
-writeChannel(2, options[mode][2])
+writeChannel(1, options[mode][0])
+writeChannel(2, options[mode][1])
+writeChannel(3, options[mode][2])
 
-writeChannel(3, options[mode][0])
-writeChannel(4, options[mode][1])
-writeChannel(5, options[mode][2])
+writeChannel(4, options[mode][0])
+writeChannel(5, options[mode][1])
+writeChannel(6, options[mode][2])
