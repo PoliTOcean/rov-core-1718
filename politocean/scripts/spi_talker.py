@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 '''
-This node receives joystick data and converts them into string commands.
-If the variable "check" remains the same for some time, it sends a STOP signal
-to the ROV, since it means that the joystick (or the ROV Raspberry) has been disconnected'''
+This node receives joystick data and sends them through SPI to the ATmega from which
+it receives back the sensors data'''
 import rospy
 from politocean.msg import *
 from errmess_publisher import *
