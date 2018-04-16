@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import rospy
 from politocean.srv import wifi
 import matplotlib.pyplot as plt
