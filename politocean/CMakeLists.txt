@@ -50,7 +50,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## Generate messages in the 'msg' folder
  add_message_files(
    FILES
-   joystick_data.msg
+   joystick_axis.msg
+   joystick_buttons.msg
    sensors_data.msg
    component_data.msg
    ID.msg
