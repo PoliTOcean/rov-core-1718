@@ -67,12 +67,6 @@ def main():
     
     comm = [0, 0, 0, 0]
     bitArray = [0, 0, 0, 0, 0, 0, 0, 0]
-    
-    for i in range(4): # 4 datas to transfer
-        comm[i] = 0
-
-    for i in range(8):
-        bitArray[i] = 0
 
     mode = 1
     
