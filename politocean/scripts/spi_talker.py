@@ -43,7 +43,7 @@ def joystickButtCallback(data):
         mode = 0.3
     
     for i in range(8):
-        comm[3] += bitArray[i]<<1
+        comm[3] += bitArray[i]<<i
         
 def joystickAxisCallback(data):
     global comm
@@ -65,8 +65,8 @@ def main():
     global bitArray
     global mode
     
-    comm = []
-    bitArray = []
+    comm = [0, 0, 0, 0]
+    bitArray = [0, 0, 0, 0, 0, 0, 0, 0]
     
     for i in range(4): # 4 datas to transfer
         comm[i] = 0
