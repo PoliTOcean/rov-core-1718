@@ -11,7 +11,7 @@ void setup (void)
 volatile char buf [4];
 volatile byte pos ref1;
 volatile float y x rz;
-volatile bool trigger2 trigger pinkie start stop;
+volatile bool trigger2 trigger pinkie cmdstart cmdstop;
 
 
 // SPI interrupt routine
@@ -44,8 +44,8 @@ ISR (SPI_STC_vect)
  bitSet(c,7);
  bitClear(c,6);
  bitSet(c,5);
- bitWrite(c,4,stop);
- bitWrite(c,3,start);
+ bitWrite(c,4,cmdstop);
+ bitWrite(c,3,cmdstart);
  bitWrite(c,2,pinkie);
  bitWrite(c,1,trigger);
  bitWrite(c,0,trigger2);
