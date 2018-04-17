@@ -41,14 +41,14 @@ ISR (SPI_STC_vect)
  case 3:
  ref1 = c;
 
- bitSet(c,7);
- bitClear(c,6);
- bitSet(c,5);
- bitWrite(c,4,cmdstop);
- bitWrite(c,3,cmdstart);
- bitWrite(c,2,pinkie);
- bitWrite(c,1,trigger);
- bitWrite(c,0,trigger2);
+ bitRead(c,7,1);
+ bitRead(c,6,0);
+ bitRead(c,5,1);
+ bitRead(c,4,cmdstop);
+ bitRead(c,3,cmdstart);
+ bitRead(c,2,pinkie);
+ bitRead(c,1,trigger);
+ bitRead(c,0,trigger2);
  
  break;
 
