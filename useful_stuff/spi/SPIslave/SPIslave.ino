@@ -9,6 +9,7 @@ void setup (void)
 }
 
 volatile char buf [4];
+volatile char ver [3];
 volatile byte pos ref1;
 volatile float y x rz;
 volatile bool trigger2 trigger pinkie cmdstart cmdstop;
@@ -41,15 +42,16 @@ ISR (SPI_STC_vect)
  case 3:
  ref1 = c;
 
- bitRead(c,7,1);
- bitRead(c,6,0);
- bitRead(c,5,1);
- bitRead(c,4,cmdstop);
- bitRead(c,3,cmdstart);
- bitRead(c,2,pinkie);
- bitRead(c,1,trigger);
- bitRead(c,0,trigger2);
+ cmdstop = bitRead(c,4);
+ cmdstart = bitRead(c,3);
+ pinkie = bitRead(c,2);
+ trigger = bitRead(c,1);
+ trigger2 = bitRead(c,0);
  
+ if (ver[0] ==1 && ver[1]=0 && ver[2]=1)
+ {
+  Serial.print("Condition Verified"
+ }
  break;
 
  } 
