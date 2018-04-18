@@ -36,7 +36,7 @@ def Rotate_CW():
     
     GPIO.output(DIR, CW)
     
-    while ( e_butt == 1 ):
+  #  while ( e_butt == 1 ):
         
         if (ry > 0):
             
@@ -46,8 +46,8 @@ def Rotate_CW():
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay_new)
             
-        else:
-            return 
+ #       else:
+ #           return 
         
 def Rotate_CCW():
     global e_butt
@@ -55,7 +55,7 @@ def Rotate_CCW():
     
     GPIO.output(DIR, CCW)
     
-    while ( e_butt == 1 ):
+ #   while ( e_butt == 1 ):
         
         if (ry < 0):
             
@@ -65,8 +65,8 @@ def Rotate_CCW():
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay_new)
             
-        else: 
-            return 
+#        else: 
+#            break 
         
 def joystickButtCallback(data):
     
