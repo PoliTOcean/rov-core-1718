@@ -26,7 +26,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR, GPIO.OUT)
 GPIO.setup(STEP, GPIO.OUT)
 GPIO.setup(EN_n1, GPIO.OUT)
-GPIO.output(EN_n1,0)
+GPIO.output(EN_n1, 1) # En attivo basso
 
 delay = .01
 
@@ -76,30 +76,33 @@ def joystickButtCallback(data):
     if data.ID == "e_butt":
         e_butt = data.status
     if data.ID == "ry":
-        e_butt = data.status
+        ry = data.status
         
 def main():
     
     global e_butt
     global ry
     
+    e_butt = 0
+    ry = 0
+    
     # set node name
     rospy.init_node("Polso", anonymous=False)
     #subscriber
-    joystick_butt_sub = rospy.Subscriber("joystick_butt", joystick_butt, joystickButtCallback)
+    joystick_butt_sub = rospy.Subscriber("joystick_buttons", joystick_buttons, joystickButtCallback)
     
     errMessInit() #init topics
     
     while not rospy.is_shutdown(): 
     
         if ( e_butt == 1 ) :
-            GPIO.output(EN_n1,1)
+            GPIO.output(EN_n1,0)
             if (ry > 0):
                 Rotate_CW()
             else: 
                 Rotate_CCW()
         else :
-            GPIO.output(EN_n1,0)
+            GPIO.output(EN_n1,1)
             sleep(1)
             
 if __name__ == '__main__':
