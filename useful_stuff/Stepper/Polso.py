@@ -30,12 +30,12 @@ def Rotate_CW():
     
     GPIO.output(DIR, CW)
     
-    while ( Joy.ID == 'wheel_bott' ) & ( Joy.status ):
+    while ( e_butt == 1 ):
         
-        if ((Joy.ID == 'trottle') & (Joy.status > 0)):
+        if (ry > 0):
             
             status = Joy.status
-            delay_new = delay/(status*50)
+            delay_new = delay/(ry*50)
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay_new)
             GPIO.output(STEP, GPIO.LOW)
@@ -48,12 +48,12 @@ def Rotate_CCW():
     
     GPIO.output(DIR, CCW)
     
-    while ( Joy.ID == 'wheel_bott' ) & ( Joy.status ):
+        while ( e_butt == 1 ):
         
-        if ((Joy.ID == 'trottle') & (Joy.status < 0)):
+        if (ry < 0):
             
             status = Joy.status
-            delay_new = delay/(Joy.status*50)
+            delay_new = -delay/(ry*50)
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay_new)
             GPIO.output(STEP, GPIO.LOW)
@@ -62,12 +62,32 @@ def Rotate_CCW():
         else: 
             return 
         
+def joystickButtCallback(data):
+    
+    global e_butt
+    global ry
+    
+    if data.ID == "e_butt":
+        e_butt = data.status
+    if data.ID == "ry":
+        e_butt = data.status
+        
 def main():
+    
+    global e_butt
+    global ry
+    
+        # set node name
+    rospy.init_node("Polso", anonymous=False)
+    #subscriber
+    joystick_butt_sub = rospy.Subscriber("joystick_butt", joystick_butt, joystickButtCallback)
+    
+    errMessInit() #init topics
     
    while not rospy.is_shutdown(): 
     
-        if ( Joy.ID == 'wheel_bott' ) & ( Joy.status ) :
-            if ((Joy.ID == 'trottle') & (Joy.status > 0)):
+        if ( e_butt == 1 ) :
+            if (ry > 0):
                 Rotate_CW()
             else: 
                 Rotate_CCW()

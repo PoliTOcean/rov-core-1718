@@ -30,7 +30,19 @@ step_count = SPR/2
 delay = .01 # 4/400 seconds/steps --> I'm saing that I need 4 seconds for a complete rotation
             #                     --> 2sec for 180deg and so on
 
+
+
+def joystickButtCallback(data):
+    global Status
+    
+    if data.ID == "z":
+        Status = data.status
+        
+        
+        
 def NormMode(Old , New):
+    global Actual_status
+    global Status
         
         if New > Old:
                 GPIO.output(DIR, CW)                                  
@@ -39,8 +51,8 @@ def NormMode(Old , New):
                     sleep(delay)
                     GPIO.output(STEP, GPIO.LOW)
                     sleep(delay)
-                    if Joy.ID == 'z':
-                        i = (New-Old)/(0.9)
+                    if Actual_status != Status:  
+                        break
 
         elif New < Old:
                 GPIO.output(DIR, CCW)                                  
@@ -49,15 +61,27 @@ def NormMode(Old , New):
                     sleep(delay)
                     GPIO.output(STEP, GPIO.LOW)
                     sleep(delay)
-                    if Joy.ID == 'z':
-                        i = (Old-New)/(0.9)
+                    if Actual_status != Status:  
+                        break
                     
 def main():
 ## CALIBRATION
+    global Status
+    global Actual_status
     Error = 1
-    while ((Joy.ID != 'z' )  & (Joy.status != -1)):
+    
+    # set node name
+    rospy.init_node("Braccio", anonymous=False)
+    #subscriber
+    joystick_butt_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickButtCallback)
+    
+    errMessInit() #init topics
+    
+    
+    while (Status != -1):
+        sleep(.1)
         
-    if ((Joy.ID == 'z' )  & (Joy.status == -1)):
+    if (Status == -1):
         for x in range(step_count):
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay)
@@ -66,25 +90,26 @@ def main():
             Sensor = Val_from_magnetic_sensor 
             
             if Sensor == 1:       # I find the initial position
-                x = step_count
+                break
                 Angle = 0
                 Error = 0
                 
 # Waiting command from Joystick 
-    while (!Error)  :
+    while Error == 0  :
         
-        if (isFloat(Joy.staus) & (Joy.ID == 'z' )):
-        Joy_Manopola = Joy.status
-        if Joy_Manopola > 1 | Joy_Manopola < -1:
+            
+        if Status > 1 | Status < -1:
             Error = 1
-            print ("Errore lettura Joystick\n")
+            publishErrors("Braccio", "Errore lettura Joystick\n")
+            
         else:
             
-        Angle_new = 180*((Joy_Manopola/2)+0.5) # --> Joy rage [-1,+1] ; Angle range [0,180]
-                                                # Joy=-1 --> angle=0 i.e. nitial position
-        NormMode(Angle , Angle_new)
+            Angle_new = 180*((Status/2)+0.5)            # --> Joy rage [-1,+1] ; Angle range [0,180]
+                                                        # Joy=-1 --> angle=0 i.e. nitial position
+            Actual_status = Status                      
+            NormMode(Angle , Angle_new)
         
-        Angle = Angle_new
+            Angle = Angle_new
         
         
         
