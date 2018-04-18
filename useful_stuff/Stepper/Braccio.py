@@ -112,7 +112,8 @@ def main():
         
             Angle = Angle_new
         
-        
+if __name__ == '__main__':
+    main()
         
 GPIO.cleanup()
     

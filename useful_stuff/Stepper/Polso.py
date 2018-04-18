@@ -101,7 +101,10 @@ def main():
         else :
             GPIO.output(EN_n1,0)
             sleep(1)
-        
+            
+if __name__ == '__main__':
+    main()
+    
 GPIO.cleanup()
     
     
