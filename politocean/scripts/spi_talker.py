@@ -24,21 +24,21 @@ def joystickButtCallback(data):
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
 
-    if data.ID == "thumb": #stop
+    if(data.ID == "thumb"): #stop
         bitArray[4] = data.status
-    if data.ID == "thumb2": #start
+    if(data.ID == "thumb2"): #start
         bitArray[3] = data.status
-    if data.ID == "trigger2": #fast up
+    if(data.ID == "trigger2"): #fast up
         bitArray[0] = data.status
-    if data.ID == "trigger": #slow up
+    if(data.ID == "trigger"): #slow up
         bitArray[1] = data.status
-    if data.ID == "pinkie": #down
+    if(data.ID == "pinkie"): #down
         bitArray[2] = data.status
-    if data.ID == "mode_1" & data.status == True:
+    if(data.ID == "mode_1") & (data.status == True):
         mode = 1
-    if data.ID == "mode_2" & data.status == True:
+    if(data.ID == "mode_2") & (data.status == True):
         mode = 0.6
-    if data.ID == "mode_3" & data.status == True:
+    if(data.ID == "mode_3") & (data.status == True):
         mode = 0.3
     
     for i in range(8):
@@ -48,11 +48,11 @@ def joystickAxisCallback(data):
     global comm
     global mode
     
-    if data.ID == "x": #laterale
+    if(data.ID == "x"): #laterale
         comm[1] = int((data.status*127*mode)+127)
-    if data.ID == "y": #anvanti
+    if(data.ID == "y"): #anvanti
         comm[0] = int((data.status*127*mode)+127)
-    if data.ID == "rz": #rotazione
+    if(data.ID == "rz"): #rotazione
         comm[2] = int((data.status*127*mode)+127)
 
 def main():
