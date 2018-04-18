@@ -28,7 +28,7 @@ GPIO.output(DIR, CCW) #controllare senso per inizializzazione
 
 step_count = SPR/2
 delay = .01 # 4/400 seconds/steps --> I'm saing that I need 4 seconds for a complete rotation
-            #                     --> 2sec for 180deg and so on
+            # --> 2sec for 180deg and so on
 
 
 
@@ -44,25 +44,25 @@ def NormMode(Old , New):
     global Actual_status
     global Status
         
-        if New > Old:
-                GPIO.output(DIR, CW)                                  
-                for i in range((New-Old)/(0.9)):
-                    GPIO.output(STEP, GPIO.HIGH)
-                    sleep(delay)
-                    GPIO.output(STEP, GPIO.LOW)
-                    sleep(delay)
-                    if Actual_status != Status:  
-                        break
+    if New > Old:
+        GPIO.output(DIR, CW)                                  
+        for i in range((New-Old)/(0.9)):
+            GPIO.output(STEP, GPIO.HIGH)
+            sleep(delay)
+            GPIO.output(STEP, GPIO.LOW)
+            sleep(delay)
+            if Actual_status != Status:  
+                break
 
-        elif New < Old:
-                GPIO.output(DIR, CCW)                                  
-                for i in range((Old-New)/(0.9)):
-                    GPIO.output(STEP, GPIO.HIGH)
-                    sleep(delay)
-                    GPIO.output(STEP, GPIO.LOW)
-                    sleep(delay)
-                    if Actual_status != Status:  
-                        break
+    elif New < Old:
+        GPIO.output(DIR, CCW)                                  
+        for i in range((Old-New)/(0.9)):
+            GPIO.output(STEP, GPIO.HIGH)
+            sleep(delay)
+            GPIO.output(STEP, GPIO.LOW)
+            sleep(delay)
+            if Actual_status != Status:  
+                break
                     
 def main():
 ## CALIBRATION
@@ -90,9 +90,9 @@ def main():
             Sensor = Val_from_magnetic_sensor 
             
             if Sensor == 1:       # I find the initial position
-                break
                 Angle = 0
                 Error = 0
+                break
                 
 # Waiting command from Joystick 
     while Error == 0  :
