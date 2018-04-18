@@ -27,6 +27,8 @@ GPIO.setup(STEP, GPIO.OUT)
 delay = .01
 
 def Rotate_CW():
+    global e_butt
+    global ry
     
     GPIO.output(DIR, CW)
     
@@ -34,7 +36,6 @@ def Rotate_CW():
         
         if (ry > 0):
             
-            status = Joy.status
             delay_new = delay/(ry*50)
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay_new)
@@ -45,6 +46,8 @@ def Rotate_CW():
             return 
         
 def Rotate_CCW():
+    global e_butt
+    global ry
     
     GPIO.output(DIR, CCW)
     
@@ -52,7 +55,6 @@ def Rotate_CCW():
         
         if (ry < 0):
             
-            status = Joy.status
             delay_new = -delay/(ry*50)
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay_new)
