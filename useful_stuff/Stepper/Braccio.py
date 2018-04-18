@@ -31,7 +31,7 @@ delay = .01 # 4/400 seconds/steps --> I'm saing that I need 4 seconds for a comp
             #                     --> 2sec for 180deg and so on
 
 def NormMode(Old , New):
-    
+        
         if New > Old:
                 GPIO.output(DIR, CW)                                  
                 for i in range((New-Old)/(0.9)):
@@ -39,6 +39,9 @@ def NormMode(Old , New):
                     sleep(delay)
                     GPIO.output(STEP, GPIO.LOW)
                     sleep(delay)
+                    if Joy.ID == 'z':
+                        i = (New-Old)/(0.9)
+
         elif New < Old:
                 GPIO.output(DIR, CCW)                                  
                 for i in range((Old-New)/(0.9)):
@@ -46,13 +49,15 @@ def NormMode(Old , New):
                     sleep(delay)
                     GPIO.output(STEP, GPIO.LOW)
                     sleep(delay)
+                    if Joy.ID == 'z':
+                        i = (Old-New)/(0.9)
                     
 def main():
 ## CALIBRATION
     Error = 1
-    while (Joy[Manopola]!=-1):
+    while ((Joy.ID != 'z' )  & (Joy.status != -1)):
         
-    if Joy[Manopola] == -1:
+    if ((Joy.ID == 'z' )  & (Joy.status == -1)):
     
         for x in range(step_count):
             GPIO.output(STEP, GPIO.HIGH)
@@ -67,14 +72,16 @@ def main():
                 Error = 0
                 
 # Waiting command from Joystick 
-    while (!Error)  :       
-        Angle_new = 180*((Joy[Manopola]/2)+0.5) # --> Joy rage [-1,+1] ; Angle range [0,180]
+    while (!Error)  :
+        if (isFloat(Joy.staus) && (Joy.ID == 'z' )):
+        Joy_Manopola = Joy.status
+        Angle_new = 180*((Joy_Manopola/2)+0.5) # --> Joy rage [-1,+1] ; Angle range [0,180]
                                                 # Joy=-1 --> angle=0 i.e. nitial position
         NormMode(Angle , Angle_new)
         
         Angle = Angle_new
         
-        if Joy[Manopola] > 1 | Joy[Manopola] < -1:
+        if Joy_Manopola > 1 | Joy_Manopola < -1:
             Error = 1
             print ("Errore lettura Joystick\n")
         
