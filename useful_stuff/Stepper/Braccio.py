@@ -58,7 +58,6 @@ def main():
     while ((Joy.ID != 'z' )  & (Joy.status != -1)):
         
     if ((Joy.ID == 'z' )  & (Joy.status == -1)):
-    
         for x in range(step_count):
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay)
@@ -73,17 +72,21 @@ def main():
                 
 # Waiting command from Joystick 
     while (!Error)  :
-        if (isFloat(Joy.staus) && (Joy.ID == 'z' )):
+        
+        if (isFloat(Joy.staus) & (Joy.ID == 'z' )):
         Joy_Manopola = Joy.status
+        if Joy_Manopola > 1 | Joy_Manopola < -1:
+            Error = 1
+            print ("Errore lettura Joystick\n")
+        else:
+            
         Angle_new = 180*((Joy_Manopola/2)+0.5) # --> Joy rage [-1,+1] ; Angle range [0,180]
                                                 # Joy=-1 --> angle=0 i.e. nitial position
         NormMode(Angle , Angle_new)
         
         Angle = Angle_new
         
-        if Joy_Manopola > 1 | Joy_Manopola < -1:
-            Error = 1
-            print ("Errore lettura Joystick\n")
+        
         
 GPIO.cleanup()
     

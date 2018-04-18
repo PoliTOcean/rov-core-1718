@@ -5,7 +5,6 @@ Created on Sat Apr  7 23:08:07 2018
 @author: DETJON
 """
 
-from time import sleep
 import RPi.GPIO as GPIO
 import rospy
 from std_msgs.msg import String
