@@ -4,6 +4,7 @@ Created on Sat Apr  7 23:08:07 2018
 
 @author: DETJON
 """
+#!/usr/bin/env python
 
 import RPi.GPIO as GPIO
 import rospy

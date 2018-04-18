@@ -4,6 +4,7 @@ Created on Tue Apr  3 18:52:44 2018
 
 @author: DETJON
 """
+#!/usr/bin/env python
 
 from time import sleep
 import RPi.GPIO as GPIO
