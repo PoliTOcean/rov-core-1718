@@ -53,13 +53,13 @@ def Rotate_CCW():
     
         while ( e_butt == 1 ):
         
-        if (ry < 0):
+            if (ry < 0):
             
-            delay_new = -delay/(ry*50)
-            GPIO.output(STEP, GPIO.HIGH)
-            sleep(delay_new)
-            GPIO.output(STEP, GPIO.LOW)
-            sleep(delay_new)
+                delay_new = -delay/(ry*50)
+                GPIO.output(STEP, GPIO.HIGH)
+                sleep(delay_new)
+                GPIO.output(STEP, GPIO.LOW)
+                sleep(delay_new)
             
         else: 
             return 
@@ -79,14 +79,14 @@ def main():
     global e_butt
     global ry
     
-        # set node name
+    # set node name
     rospy.init_node("Polso", anonymous=False)
     #subscriber
     joystick_butt_sub = rospy.Subscriber("joystick_butt", joystick_butt, joystickButtCallback)
     
     errMessInit() #init topics
     
-   while not rospy.is_shutdown(): 
+    while not rospy.is_shutdown(): 
     
         if ( e_butt == 1 ) :
             if (ry > 0):
