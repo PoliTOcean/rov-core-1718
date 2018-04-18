@@ -54,15 +54,15 @@ def Rotate_CCW():
     
     GPIO.output(DIR, CCW)
     
-        while ( e_butt == 1 ):
+    while ( e_butt == 1 ):
         
-            if (ry < 0):
+        if (ry < 0):
             
-                delay_new = -delay/(ry*50)
-                GPIO.output(STEP, GPIO.HIGH)
-                sleep(delay_new)
-                GPIO.output(STEP, GPIO.LOW)
-                sleep(delay_new)
+            delay_new = -delay/(ry*50)
+            GPIO.output(STEP, GPIO.HIGH)
+            sleep(delay_new)
+            GPIO.output(STEP, GPIO.LOW)
+            sleep(delay_new)
             
         else: 
             return 
@@ -99,6 +99,7 @@ def main():
                 Rotate_CCW()
         else :
             GPIO.output(EN_n1,0)
+            sleep(1)
         
 GPIO.cleanup()
     
