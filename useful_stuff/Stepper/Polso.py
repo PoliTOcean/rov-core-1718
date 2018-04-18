@@ -13,16 +13,19 @@ from time import sleep
 import timeit
 from errmess_publisher import *
 
-DIR = 20   # Direction GPIO Pin
-STEP = 21  # Step GPIO Pin
+DIR = 27   # Direction GPIO Pin
+STEP = 17  # Step GPIO Pin
 CW = 1     # Clockwise Rotation
 CCW = 0    # Counterclockwise Rotation
 SPR = 200  # Steps per Revolution (360 /1.7) Sensibility of nema 1.7deg
+EN_n1 = 22
 
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR, GPIO.OUT)
 GPIO.setup(STEP, GPIO.OUT)
+GPIO.setup(EN_n1, GPIO.OUT)
+GPIO.output(EN_n1,0)
 
 delay = .01
 
@@ -89,10 +92,13 @@ def main():
     while not rospy.is_shutdown(): 
     
         if ( e_butt == 1 ) :
+            GPIO.output(EN_n1,1)
             if (ry > 0):
                 Rotate_CW()
             else: 
                 Rotate_CCW()
+        else :
+            GPIO.output(EN_n1,0)
         
 GPIO.cleanup()
     
