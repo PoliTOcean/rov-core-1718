@@ -38,7 +38,7 @@ def NormMode(Old , New):
         
     if New > Old:
         GPIO.output(DIR, CW)                                  
-        for i in range((New-Old)/(0.9)):
+        for i in range(int((New-Old)/(0.9))):
             GPIO.output(STEP, GPIO.HIGH)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
@@ -47,7 +47,7 @@ def NormMode(Old , New):
 
     elif New < Old:
         GPIO.output(DIR, CCW)                                  
-        for i in range((Old-New)/(0.9)):
+        for i in range(int((Old-New)/(0.9))):
             GPIO.output(STEP, GPIO.HIGH)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
@@ -91,7 +91,7 @@ def main():
 
 # Waiting command from Joystick 
     while Error == 0  :
-        if Status > 1 | Status < -1:
+        if Status > 1 or Status < -1:
             Error = 1
             publishErrors("Braccio", "Errore lettura Joystick\n")
             
