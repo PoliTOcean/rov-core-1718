@@ -73,7 +73,9 @@ def main():
         sleep(.1)
         
     if (Status == -1):
-        for x in range(step_count):
+        GPIO.output(DIR, CCW)
+        
+        while 1:
             GPIO.output(STEP, GPIO.HIGH)
             sleep(delay)
             GPIO.output(STEP, GPIO.LOW)
