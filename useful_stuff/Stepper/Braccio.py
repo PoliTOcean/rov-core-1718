@@ -57,6 +57,9 @@ def main():
 ## CALIBRATION
     global Status
     global Actual_status
+    
+    Status = 0
+    Actual_status = 0
     Error = 1
     
     # set node name
