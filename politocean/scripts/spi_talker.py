@@ -34,11 +34,11 @@ def joystickButtCallback(data):
         bitArray[1] = data.status
     if data.ID == "pinkie": #down
         bitArray[2] = data.status
-    if data.ID == "mode_1" & data.status == True:
+    if (data.ID == "mode_1") & (data.status == True):
         mode = 1
-    if data.ID == "mode_2" & data.status == True:
+    if (data.ID == "mode_2") & (data.status == True):
         mode = 0.6
-    if data.ID == "mode_3" & data.status == True:
+    if (data.ID == "mode_3") & (data.status == True):
         mode = 0.3
     
     for i in range(8):
@@ -75,7 +75,7 @@ def main():
     joystick_butt_sub = rospy.Subscriber("joystick_buttons", joystick_buttons, joystickButtCallback)
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
-    rate = rospy.Rate(50) # 50 Hz
+    rate = rospy.Rate(50) # 50
     
     while not rospy.is_shutdown():
                 
