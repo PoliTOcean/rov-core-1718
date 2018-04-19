@@ -37,7 +37,6 @@ def NormMode(Old , New):
         GPIO.output(DIR, CW)                                  
         for i in range((New-Old)/(0.9)):
             GPIO.output(STEP, GPIO.HIGH)
-            sleep(delay)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
             if Actual_status != Status:  
@@ -47,7 +46,6 @@ def NormMode(Old , New):
         GPIO.output(DIR, CCW)                                  
         for i in range((Old-New)/(0.9)):
             GPIO.output(STEP, GPIO.HIGH)
-            sleep(delay)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
             if Actual_status != Status:  
@@ -77,7 +75,6 @@ def main():
         
         while 1:
             GPIO.output(STEP, GPIO.HIGH)
-            sleep(delay)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
             Sensor = Val_from_magnetic_sensor 
@@ -89,7 +86,6 @@ def main():
 
 # Waiting command from Joystick 
     while Error == 0  :
-
         if Status > 1 | Status < -1:
             Error = 1
             publishErrors("Braccio", "Errore lettura Joystick\n")
