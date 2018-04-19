@@ -36,7 +36,6 @@ def joystickAxisCallback(data):
                                                # Joy=-1 --> angle=0 i.e. nitial position
 
 def NormMode():
-    global Actual_status
     global Status
     global Angle
     global Angle_new
@@ -48,8 +47,6 @@ def NormMode():
             GPIO.output(STEP, GPIO.LOW)
             Angle += 0.9
             sleep(delay)
-            if Actual_status != Status:  
-                break
 
     elif Angle_new < Angle:
         GPIO.output(DIR, CCW)                                  
@@ -58,13 +55,10 @@ def NormMode():
             GPIO.output(STEP, GPIO.LOW)
             Angle -= 0.9
             sleep(delay)
-            if Actual_status != Status:  
-                break
                     
 def main():
 ## CALIBRATION
     global Status
-    global Actual_status
     global Angle
     
     Status = 0
@@ -104,7 +98,6 @@ def main():
             publishErrors("Braccio", "Errore lettura Joystick\n")
             
         else:
-            Actual_status = Status
             GPIO.output(EN_n1, 0)
             NormMode()
             GPIO.output(EN_n1, 1)
