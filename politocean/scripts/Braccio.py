@@ -23,33 +23,40 @@ GPIO.output(DIR, CCW) #controllare senso per inizializzazione
 GPIO.output(EN_n1, 1) # disable driver
 
 step_count = SPR/2
-delay = .01 # 4/400 seconds/steps --> I'm saing that I need 4 seconds for a complete rotation
-            # --> 2sec for 180deg and so on
+delay = .001
 
 def joystickAxisCallback(data):
     global Status
+    global Angle_new
     
     if data.ID == "z":
         Status = data.status
+    
+        Angle_new = 180*((Status/2)+0.5)       # --> Joy rage [-1,+1] ; Angle range [0,180]
+                                               # Joy=-1 --> angle=0 i.e. nitial position
 
-def NormMode(Old , New):
+def NormMode():
     global Actual_status
     global Status
+    global Angle
+    global Angle_new
         
-    if New > Old:
+    if Angle_new-0.45 > Angle:
         GPIO.output(DIR, CW)                                  
-        for i in range(int((New-Old)/(0.9))):
+        while Angle < Angle_new:
             GPIO.output(STEP, GPIO.HIGH)
             GPIO.output(STEP, GPIO.LOW)
+            Angle += 0.9
             sleep(delay)
             if Actual_status != Status:  
                 break
 
-    elif New < Old:
+    elif Angle_new < Angle:
         GPIO.output(DIR, CCW)                                  
-        for i in range(int((Old-New)/(0.9))):
+        while Angle > Angle_new+0.45:
             GPIO.output(STEP, GPIO.HIGH)
             GPIO.output(STEP, GPIO.LOW)
+            Angle -= 0.9
             sleep(delay)
             if Actual_status != Status:  
                 break
@@ -58,6 +65,7 @@ def main():
 ## CALIBRATION
     global Status
     global Actual_status
+    global Angle
     
     Status = 0
     Actual_status = 0
@@ -81,7 +89,7 @@ def main():
             GPIO.output(STEP, GPIO.HIGH)
             GPIO.output(STEP, GPIO.LOW)
             sleep(delay)
-            Sensor = Val_from_magnetic_sensor 
+            Sensor = 1 # value from magnetic sensor
             
             if Sensor == 1:       # I find the initial position
                 Angle = 0
@@ -96,15 +104,11 @@ def main():
             publishErrors("Braccio", "Errore lettura Joystick\n")
             
         else:
-            Angle_new = 180*((Status/2)+0.5)            # --> Joy rage [-1,+1] ; Angle range [0,180]
-                                                        # Joy=-1 --> angle=0 i.e. nitial position
             Actual_status = Status
             GPIO.output(EN_n1, 0)
-            NormMode(Angle , Angle_new)
+            NormMode()
             GPIO.output(EN_n1, 1)
-        
-            Angle = Angle_new
-        
+
 if __name__ == '__main__':
     main()
         
