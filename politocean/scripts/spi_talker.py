@@ -34,13 +34,14 @@ def joystickButtCallback(data):
         bitArray[1] = data.status
     if data.ID == "pinkie": #down
         bitArray[2] = data.status
-    if (data.ID == "mode_1") & (data.status == True):
+    if data.ID == "mode_1" & data.status == True:
         mode = 1
-    if (data.ID == "mode_2") & (data.status == True):
+    if data.ID == "mode_2" & data.status == True:
         mode = 0.6
-    if (data.ID == "mode_3") & (data.status == True):
+    if data.ID == "mode_3" & data.status == True:
         mode = 0.3
     
+    comm[3] = 0
     for i in range(8):
         comm[3] += bitArray[i]<<i
         
@@ -64,8 +65,8 @@ def main():
     global bitArray
     global mode
     
-    comm = [0, 0, 0, 0]
-    bitArray = [0, 0, 0, 0, 0, 0, 0, 0]
+    comm = [127, 127, 127, 160] # 127: mean value (0:255) for axis, 160: byte corresponding to the bit array
+    bitArray = [0, 0, 0, 0, 0, 1, 0, 1]
 
     mode = 1
     
@@ -75,11 +76,11 @@ def main():
     joystick_butt_sub = rospy.Subscriber("joystick_buttons", joystick_buttons, joystickButtCallback)
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
-    rate = rospy.Rate(50) # 50
+    rate = rospy.Rate(50) # 50 Hz
     
     while not rospy.is_shutdown():
                 
-        resp = spi.xfer2(comm)
+        resp = spi.xfer2(list(comm))
         
         values.roll = resp[3]
         values.pitch = resp[2]
