@@ -31,7 +31,6 @@ def joystickButtCallback(data):
 
     if data.ID == "thumb": #stop
         bitArray[4] = data.status
-        GPIO.output(12,0) #disable 12V
     if data.ID == "thumb2": #start
         bitArray[3] = data.status
     if data.ID == "trigger2": #fast up
@@ -46,6 +45,12 @@ def joystickButtCallback(data):
         mode = 0.6
     if (data.ID == "mode_3") & (data.status == True):
         mode = 0.3
+    
+    if (data.ID == "thumb") & (data.status == True): #stop
+        GPIO.output(12,0) #disable 12V
+    if (data.ID == "cpad_left") & (data.status == True): #start
+        GPIO.output(12,1) #enable 12V
+    
     
     comm[3] = 0
     for i in range(8):
