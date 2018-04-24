@@ -9,12 +9,11 @@ void setup (void)
 }
 
 volatile char buf[4];
-volatile char ver[3];
-volatile byte pos, ref1;
+volatile char ver[3]; //new temp
+volatile byte pos, ref1,op;
 volatile float y, x, rz;
 volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 volatile float Roll,Pitch,Pressure,Temperature;
-
 
 // SPI interrupt routine
 ISR (SPI_STC_vect)
@@ -58,8 +57,25 @@ ISR (SPI_STC_vect)
  }
  break;
 
+ //new part output
+
+ISR (SPI_STC_vect)
+{
+  byte op = SPCR;
+
+ for (byte i = 0; i<6; i++)
+ {
+ op[i] = Temperature;
+ }
+
+bitWrite(op,5,1);
+bitWrite(op,6,0);
+bitWrite(op,7,1);
+
+
+}
+
  } 
- 
   pos++;
   if ( pos >= sizeof (buf))
   pos=0;
