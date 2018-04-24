@@ -6,14 +6,19 @@ import rospy
 from politocean.msg import *
 from errmess_publisher import *
 import spidev
+import RPi.GPIO as GPIO
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12,GPIO.OUT)         #12V RC
 
 spi = spidev.SpiDev()
 spi.open(0, 0)
 
+#set node name
+rospy.init_node(NODE.JOYSUB, anonymous=False)
 #sensors publisher definition
 sensors_pub = rospy.Publisher('sensors', sensors_data, queue_size=0)
-#set node name
-rospy.init_node("spi_talker", anonymous=False)
 
 #function that receives joystick data
 def joystickButtCallback(data):
@@ -26,6 +31,7 @@ def joystickButtCallback(data):
 
     if data.ID == "thumb": #stop
         bitArray[4] = data.status
+        GPIO.output(12,0) #disable 12V
     if data.ID == "thumb2": #start
         bitArray[3] = data.status
     if data.ID == "trigger2": #fast up
@@ -34,11 +40,11 @@ def joystickButtCallback(data):
         bitArray[1] = data.status
     if data.ID == "pinkie": #down
         bitArray[2] = data.status
-    if data.ID == "mode_1" & data.status == True:
+    if (data.ID == "mode_1") & (data.status == True):
         mode = 1
-    if data.ID == "mode_2" & data.status == True:
+    if (data.ID == "mode_2") & (data.status == True):
         mode = 0.6
-    if data.ID == "mode_3" & data.status == True:
+    if (data.ID == "mode_3") & (data.status == True):
         mode = 0.3
     
     comm[3] = 0
@@ -56,6 +62,23 @@ def joystickAxisCallback(data):
     if data.ID == "rz": #rotazione
         comm[2] = int((data.status*127*mode)+127)
 
+def initializeSPI():
+    resp = [3]
+    test = 3
+    
+    publishMessages(NODE.ROV, "Trying to connect to ATMega...")
+    
+    while resp[0] > 1:
+        resp = spi.xfer2([test])
+        resp = spi.xfer2([0])
+        if (test == resp[0]):
+            test -= 1
+            
+    resp = spi.xfer2([5]) # end the initialization process
+        
+    publishMessages(NODE.ROV, "ATMega connected and enabled.")
+    publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
+
 def main():
     errMessInit() #init topics
     
@@ -69,6 +92,8 @@ def main():
     bitArray = [0, 0, 0, 0, 0, 1, 0, 1]
 
     mode = 1
+    ind = 0
+    resp = [0,0,0,0]
     
     values = sensors_data()
 
@@ -77,15 +102,21 @@ def main():
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
     rate = rospy.Rate(50) # 50 Hz
+
+#    initializeSPI()
     
     while not rospy.is_shutdown():
-                
-        resp = spi.xfer2(list(comm))
         
-        values.roll = resp[3]
-        values.pitch = resp[2]
-        values.pressure = resp[1]
-        values.temperature = resp[0]
+        resp[ind] = spi.xfer2([comm[ind]])[0]
+        if ind < 3:
+            ind += 1
+        else:
+            ind = 0
+        
+        values.roll = resp[0]
+        values.pitch = resp[1]
+        values.pressure = resp[2]
+        values.temperature = resp[3]
         
         try: #publish commands
             sensors_pub.publish(values)
