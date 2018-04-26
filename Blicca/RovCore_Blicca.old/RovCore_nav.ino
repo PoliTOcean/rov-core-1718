@@ -21,88 +21,124 @@ Servo T200_6;
 
 //variables for joystick values
 int up, down, fastV, rx, ry, ly, lx;
-
-// variables needed by SPI code
-volatile char buf[4];
-volatile char ver[3]; //bit check (1 0 1)
-volatile byte pos_spi = 1, ref1, op;
-volatile float y, x, rz;
-volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
-
-// SPI interrupt routine
-ISR (SPI_STC_vect)
-{
-  byte c = SPDR;
-
- if (pos_spi < sizeof buf)
-    {
-    SPDR = buf [pos_spi];
-    }
- switch (pos_spi) 
- {
-
- case 0:
- y = float(c-127)/127;
- break;
-
- case 1:
- x = float(c-127)/127;
- break;
-
- case 2:
- rz = float(c-127)/127;
- break;
-
- case 3:
- ref1 = c;
- 
- ver[0] = bitRead(c,7);
- ver[1] = bitRead(c,6);
- ver[2] = bitRead(c,5);
- cmdstop = bitRead(c,4);
- cmdstart = bitRead(c,3);
- pinkie = bitRead(c,2);
- trigger = bitRead(c,1);
- trigger2 = bitRead(c,0);
-
- if(cmdstart)
-  startRov();
- if(cmdstop)
-  stopRov();
-
- if(trigger)
- {
-  up = 1;
-  down = 0;
-  fastV = 0;
- }
- else if(trigger2)
- {
-  up = 1;
-  down = 0;
-  fastV = 1;
- }
- else if(pinkie)
- {
-  up = 0;
-  down = 1;
-  fastV = 0;
- }
- 
- if (ver[0] ==1 && ver[1]==0 && ver[2]==1)
- {
-  //Serial.println("Condition Verified");
-  ;
- }
- break;
-
- }
-
- pos_spi++;
- if ( pos_spi >= sizeof (buf))
- pos_spi=0;
+char cmd[3];
+int pos, sign, cmdFlag, begRead;
+/* COMMANDS MAP
+ *  
+ *  CMD   VALUES      DESCRIPTION             JOYSTICK BUTTON
+ *  ---------------------------------------------------------
+ *  /     -           Begin/end transmission  -
+ *  U     -           Up                      Triangle
+ *  D     -           Down                    X
+ *  V+    -           Fast VERTICAL           R2
+ *  V-    -           Slow VERTICAL           R1
+ *  RX    000-100     Right analog x-axis     Rx
+ *  RY    000-100     Right analog y-axis     Ry
+ *  LY    000-100     Left analog y-axis      Ly
+ *  LX    000-100     Left analog x-axis      Lx
+ *  G     -           Go: start the ROV       Start
+ *  S     -           STOP the ROV            Select
+ *  C     -           Calibrate sensors       -
+ *  W     -           Is the ROV awake?       -
+ */
+void joystickRead(){ //function to read from joystick, when it's available, one byte a time
+  char data=0; //set data to 0
   
-}  // end of interrupt service routine (ISR) SPI_STC_vect
+  if(Serial.available())  //if there is something to read
+    data = Serial.read();   //read the character
+
+  if(data==0){ //if data is still 0, go out
+    if(safeTimer.isExpired()){ //if we haven't received any command for too long, stop ROV
+      stopRov();
+      safeTimer.restart();
+    }
+    return;
+  }
+  safeTimer.restart();
+
+
+  if(data=='/'){                            //if it is the start one
+    up=down=fastV=pos=rx=ry=ly=lx=0;  //then reset variables
+    sign=cmdFlag=1;
+    begRead=1;    //change flag state
+    return;
+  }else if(data=='\\')                      //else, if it is the end one,
+    begRead=0;                              //then reset begRead
+  
+  if(!begRead)  //if I read something, but I'm not reading,
+    return;     //then go out
+    
+  if(cmdFlag){            //if I'm still reading the command
+    cmd[pos] = data;        //save it
+    pos++;                  //increment pos
+    if(pos>=2)              //if I've certainly finished (there is no command longer than 2)
+      cmdFlag=pos=cmd[2]=0;   //reset position and cmdFlag, in order to read following values
+    else                    //else, if I'm on the first character
+      switch(cmd[0]){         //let's see which command is (see COMMAND MAP above)
+        case 'S': //stop
+          stopRov();
+          pos=0;
+          break;
+        case 'G': //go
+          startRov();
+          pos=0;
+          break;
+        case 'U': //up
+          up=1;
+          pos=0;
+          break;
+        case 'D': //down
+          down=1;
+          pos=0;
+          break;
+        case 'V': //V+/V-
+          cmdFlag=pos=cmd[2]=0;
+          break;
+        case 'R': //right x/y
+          break;
+        case 'L': //left x/y
+          break;
+        default:
+          pos=0;  //reset pos=0, in order to read the following command
+          break;
+      }
+      
+    return;
+  }else{                //else, if I'm reading the value
+    if(pos==0 && (data=='-'||data=='+'||data==' ')){
+      if(data=='-')  //check for the sign
+        sign=-1;
+      if(!strcmp(cmd, "V")){
+        fastV=sign;
+        cmdFlag=1;
+      }
+      return;
+    }
+    if('0'<=data&&data<='9'){  //if it is a digit character
+      data-='0';  //convert to an integer
+    
+      //check commands
+      if(!strcmp(cmd, "RX"))
+        rx = 10*rx + sign*data; //decimal conversion => new_x = old_x*10 + new_digit;
+      else if(!strcmp(cmd, "RY"))
+        ry = 10*ry + sign*data;
+      else if(!strcmp(cmd, "LY"))
+        ly = 10*ly + sign*data;
+      else if(!strcmp(cmd, "LX"))
+        lx = 10*lx + sign*data;
+      else                     //else, if it isn't any known command,
+        pos=3;                  //then  reach the finish condition
+    }else      //else, if it isn't a digit character, either for some error or for ' ' character,
+      pos=3;   //then  reach the finish condition
+    
+    if(pos>=3){ //if it finished
+      cmdFlag=1;    //reset command flag to 1
+      pos=0;        //reset position
+    }else       //else, if it hasn't finished yet,
+      pos++;        //then increment pos
+    
+  }
+}
 
 //function for value saturation. If value is in modulus bigger than MAX_VAL, it takes its value
 int linSaturation(int value, int MAX_VAL) {
@@ -171,12 +207,14 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
   vertical[3] += linSaturation(rollPower, MAX_IMU);
 
   //value for up-down movement
-  valUD=0;            //reset valUD
-  if(down || up){         //controlled up-down from joystick
-    savePressure=1;                           //it has to save pressure when finished
-    valUD = -(up-down)*(V_MUL+fastV*FAST_V);  //fixed value depending on buttons pressed
-  }else if(savePressure) //else, if it is not (still) pressing up/down buttons
-    saveRequestedPressure(); //save pressure for autoquote
+  if(!begRead){     //if it is not reading, can change valUD based on joystick value
+    valUD=0;            //reset valUD
+    if(down || up){         //controlled up-down from joystick
+      savePressure=1;                           //it has to save pressure when finished
+      valUD = -(up-down)*(V_MUL+fastV*FAST_V);  //fixed value depending on buttons pressed
+    }else if(savePressure) //else, if it is not (still) pressing up/down buttons
+      saveRequestedPressure(); //save pressure for autoquote
+  }
   
   if(!savePressure) //change value for autoquote
     valUD = (reqPress-curPress)*kDep;
@@ -193,6 +231,9 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
 void evaluateHorizontal(int *leftValue, int *rightValue){
   int val, sign=1, valR, valL, pivSpeed;
   float fPivScale=0.0;
+
+  if(begRead) //if it's reading from the serial, don't change anything
+    return;   //and return
   
   //take the front/back value from joystick
   val = valL = valR = -ry*H_MUL;

@@ -1,4 +1,5 @@
 #include <RBD_Timer.h>  //library for custom timer
+#include "TSYS01.h"     //library for temperature sensor
 #include "MS5837.h"     //library for pressure sensor
 #include <Servo.h>      //library for servos
 
@@ -42,21 +43,23 @@
 RBD::Timer timer, safeTimer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
 //sensors variables
 MS5837 pressure;
+TSYS01 temperature;
 int start;                            //ROV start/stop flag
 int valR, valL;                       //values of horizontal movement
 float reqPress, curPress, curTemp, pitch, roll;    //sensors values
 
 //setup function
 void setup(){
+  serialInit(dST*1000);   //serial initialization (timeout passed as parameter)
+
   initI2C();              //IMU communication protocol initialization
   
   //set the ESC Servos pins in the right way
   initEscServos(escPin_1, escPin_2, escPin_3, escPin_4, escPin_5, escPin_6);
   
   //sensors initialization
+  temperature.init();
   pressure.init();
-
-  pinMode(MISO, OUTPUT);
   
   delay(1000);    //delay of 1 second to make actions complete
   
@@ -67,10 +70,7 @@ void setup(){
   safeTimer.setTimeout(safedT*1000);
   safeTimer.restart();
 
-  // turn on SPI interrupt
-  cli();
-  SPCR = 0b11000000;
-  sei();
+  while(!Serial.available());    //wait for first command from Serial
 }
 
 //loop function
@@ -80,9 +80,15 @@ void loop(){
 
  /* if(curTemp>=MAX_TEMP) //safe check on temperature. We hope we'll never need that
     stopRov();*/
-    
+  
+  joystickRead();       //read data from joystick, if available
+  
   if(isTime()) {                            //if the IMU timer is expired
-    dataRead();     // read angles, pressure, temperature and prepare it for spi
+    imuRead();                              //read IMU data
+    curPress = readPress();                 //read pressure
+    curTemp =  readTemp();                  //read temperature
+    //print over Serial (function internally checks if it is time to do that)
+    printOverSerial(0, 13, "%d %d %d %d\n", curPress, curTemp, pitch, roll);
   }
   
   if(start){                            //if the ROV is started
@@ -96,6 +102,7 @@ void loop(){
 
     //set new motors powers
     setServosValues(valL, valR, vertical[0], vertical[1], vertical[2], vertical[3], MAX_SRV);
+    printOverSerial(1, 10, "L: %d\tR: %d\tV1: %d\tV2: %d\tV3: %d\tV4: %d\n", valL, valR, vertical[0], vertical[1], vertical[2], vertical[3]);
   }else                                 //else, if the ROV is stopped,
     setServosValues(0, 0, 0, 0, 0, 0, 0);       //then send STOP signal to motors
 }
