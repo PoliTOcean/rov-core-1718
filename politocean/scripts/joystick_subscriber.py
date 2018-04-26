@@ -113,6 +113,8 @@ def main():
     rate = rospy.Rate(50) # 50 Hz
 
 #    initializeSPI()
+    publishMessages(NODE.ROV, "ATMega connected and enabled.") # per ora ci fidiamo funzioni
+    publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
     
     while not rospy.is_shutdown():
         
@@ -129,14 +131,17 @@ def main():
         
         if ((resp[3]&0b11100000)>>5) - 0b00000101 != 0:
             publishErrors("spi_talker", "SPI communication error: data mismatched")
+            publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
+            publishMessages(NODE.ROV, "Trying to connect to ATMega...")
             GPIO.output(7,0) # reset the atMega
             time.sleep(0.1)
             GPIO.output(7,1)
             time.sleep(0.1)
             
             rep[3] = 0b10100000
-            
             ind = 0
+            publishMessages(NODE.ROV, "ATMega connected and enabled.")
+            publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
         
         try: #publish commands
             sensors_pub.publish(values)
