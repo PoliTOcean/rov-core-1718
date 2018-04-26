@@ -6,7 +6,6 @@
 #define TEST 1
 
 /*Important values initialization*/
-#define RE_n_enable 3         // serial communication enable pin
 #define IMU_ADDR 0x69         // IMU IMU_ADDRess
 #define STOP 1500             // frequency for a still rotor
 #define GYRO_SENS PI/1400.0   // gyroscope sensitivity

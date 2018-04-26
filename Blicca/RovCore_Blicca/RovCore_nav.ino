@@ -91,7 +91,6 @@ ISR (SPI_STC_vect)
  
  if (ver[0] ==1 && ver[1]==0 && ver[2]==1)
  {
-  //Serial.println("Condition Verified");
   ;
  }
  break;
