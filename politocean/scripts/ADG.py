@@ -1,3 +1,4 @@
+
 import smbus
 
 def reset():
@@ -53,3 +54,5 @@ def micro_stepping(select, mode):
         writeChannel(4, options[mode][0])
         writeChannel(5, options[mode][1])
         writeChannel(6, options[mode][2])
+       
+

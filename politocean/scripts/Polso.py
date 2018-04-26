@@ -6,6 +6,7 @@ from std_msgs.msg import String
 from politocean.msg import *
 from time import sleep
 from errmess_publisher import *
+from ADG import micro_stepping
 
 DIR = 27   # Direction GPIO Pin
 STEP = 17  # Step GPIO Pin
@@ -77,6 +78,7 @@ def main():
     while not rospy.is_shutdown(): 
     
         if ( e_butt == 1 ) :
+            micro_stepping(1,2)
             GPIO.output(EN_n1, 0)
             if (ry > 0):
                 Rotate_CW()
@@ -90,6 +92,3 @@ if __name__ == '__main__':
     main()
     
 GPIO.cleanup()
-    
-    
-    

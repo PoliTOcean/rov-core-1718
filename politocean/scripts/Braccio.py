@@ -6,6 +6,7 @@ import rospy
 from std_msgs.msg import String
 from politocean.msg import *
 from errmess_publisher import *
+from ADG import micro_stepping
 
 CALIBRATE = 6 # Joystick botton to give 'start calibration'
 DIR = 20   # Direction GPIO Pin
@@ -98,6 +99,7 @@ def main():
             publishErrors("Braccio", "Errore lettura Joystick\n")
             
         else:
+            micro_stepping(0,2)
             GPIO.output(EN_n1, 0)
             NormMode()
             GPIO.output(EN_n1, 1)
