@@ -1,5 +1,7 @@
 void setup (void)
 {
+  Serial.begin(9600);
+  
   pinMode(MISO, OUTPUT);
 
   // turn on SPI interrupt
@@ -10,7 +12,7 @@ void setup (void)
 
 volatile char buf[4];
 volatile char ver[3]; //new temp
-volatile byte pos, ref1,op;
+volatile byte pos = 1, ref1,op;
 volatile float y, x, rz;
 volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 volatile float Roll,Pitch,Pressure,Temperature;
@@ -28,15 +30,15 @@ ISR (SPI_STC_vect)
  {
 
  case 0:
- y = (c-127)/127;
+ y = float(c-127)/127;
  break;
 
  case 1:
- x = (c-127)/127;
+ x = float(c-127)/127;
  break;
 
  case 2:
- rz = (c-127)/127;
+ rz = float(c-127)/127;
  break;
 
  case 3:
@@ -53,32 +55,16 @@ ISR (SPI_STC_vect)
  
  if (ver[0] ==1 && ver[1]==0 && ver[2]==1)
  {
-  Serial.println("Condition Verified");
+  //Serial.println("Condition Verified");
+  ;
  }
  break;
 
- //new part output
-
-ISR (SPI_STC_vect)
-{
-  byte op = SPCR;
-
- for (byte i = 0; i<6; i++)
- {
- op[i] = Temperature;
  }
 
-bitWrite(op,5,1);
-bitWrite(op,6,0);
-bitWrite(op,7,1);
-
-
-}
-
- } 
-  pos++;
-  if ( pos >= sizeof (buf))
-  pos=0;
+ pos++;
+ if ( pos >= sizeof (buf))
+ pos=0;
   
 }  // end of interrupt service routine (ISR) SPI_STC_vect
 
@@ -89,11 +75,21 @@ void loop (void)
   Pressure = 0;
   Temperature = 25;
 
+  if(Temperature < 20)
+    Temperature = 20;
+  else if(Temperature > 51)
+    Temperature = 51;
+  byte op = (Temperature-20); // tempertaure from 20°C to 51°C -> 5 bit
+
+  bitWrite(op,5,1);
+  bitWrite(op,6,0);
+  bitWrite(op,7,1);
+
 
   buf[0] = Roll;
   buf[1] = Pitch;
   buf[2] = Pressure;
-  buf[3] = Temperature;
+  buf[3] = op;
 } 
 
 

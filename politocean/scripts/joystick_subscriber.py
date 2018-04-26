@@ -7,10 +7,14 @@ from politocean.msg import *
 from errmess_publisher import *
 import spidev
 import RPi.GPIO as GPIO
+import time
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(12,GPIO.OUT)         #12V RC
+GPIO.setup(7,GPIO.OUT)          #reset atMega
+
+GPIO.output(7,1) #do not reset the atMega
 
 spi = spidev.SpiDev()
 spi.open(0, 0)
@@ -98,7 +102,7 @@ def main():
 
     mode = 1
     ind = 0
-    resp = [0,0,0,0]
+    resp = [0,0,0,0b10100000]
     
     values = sensors_data()
 
@@ -121,7 +125,18 @@ def main():
         values.roll = resp[0]
         values.pitch = resp[1]
         values.pressure = resp[2]
-        values.temperature = resp[3]
+        values.temperature = (resp[3]&0b00011111) + 20
+        
+        if ((resp[3]&0b11100000)>>5) - 0b00000101 != 0:
+            publishErrors("spi_talker", "SPI communication error: data mismatched")
+            GPIO.output(7,0) # reset the atMega
+            time.sleep(0.1)
+            GPIO.output(7,1)
+            time.sleep(0.1)
+            
+            rep[3] = 0b10100000
+            
+            ind = 0
         
         try: #publish commands
             sensors_pub.publish(values)
