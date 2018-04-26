@@ -33,7 +33,7 @@ def joystickButtCallback(data):
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
 
-    if data.ID == "thumb": #stop
+    if data.ID == "cpad_down": #stop only the ROV
         bitArray[4] = data.status
     if data.ID == "thumb2": #start
         bitArray[3] = data.status
