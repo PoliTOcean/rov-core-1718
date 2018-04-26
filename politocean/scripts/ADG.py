@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 26 11:11:18 2018
-
-@author: DETJON
-"""
 
 import smbus
 
@@ -59,4 +53,8 @@ def micro_stepping(select, mode):
     elif select == 1:
         writeChannel(4, options[mode][0])
         writeChannel(5, options[mode][1])
+<<<<<<< HEAD
         writeChannel(6, options[mode][2])
+=======
+        writeChannel(6, options[mode][2])
+>>>>>>> bb3dfc76ac751478d9c85647fec0a347bf5c2a35

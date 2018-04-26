@@ -1,150 +1,149 @@
 #!/usr/bin/env python
 '''
-This node receives joystick data and converts them into string commands.
-If the variable "check" remains the same for some time, it sends a STOP signal
-to the ROV, since it means that the joystick (or the ROV Raspberry) has been disconnected'''
+This node receives joystick data and sends them through SPI to the ATmega from which
+it receives back the sensors data'''
 import rospy
-from std_msgs.msg import String
 from politocean.msg import *
-from time import sleep
-import timeit
 from errmess_publisher import *
+import spidev
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(12,GPIO.OUT)         #12V RC
+GPIO.setup(7,GPIO.OUT)          #reset atMega
+
+GPIO.output(7,1) #do not reset the atMega
+
+spi = spidev.SpiDev()
+spi.open(0, 0)
 
 #set node name
 rospy.init_node(NODE.JOYSUB, anonymous=False)
-
-#ROS publishers
-errors_pub = rospy.Publisher('errors', String, queue_size=10)
-commands_pub = rospy.Publisher('commands', String, queue_size=9)
-
-#check variable
-check = 0
+#sensors publisher definition
+sensors_pub = rospy.Publisher('sensors', sensors_data, queue_size=0)
 
 #function that receives joystick data
 def joystickButtCallback(data):
-    global check
-    global buttComm
-    global thumb2
-    global trigger
-    global pinkie
-    global mode_1
-    global mode_3
-    check+=1; #update check
-    if(check>=1000):
-        check=0;    #reset check
-    #prepare command string
-    buttComm=""
+    global comm
+    global bitArray
+    global mode
+
+    bitArray[6] = 0
+    bitArray[5] = bitArray[7] = 1
+
+    if data.ID == "thumb": #stop
+        bitArray[4] = data.status
+    if data.ID == "thumb2": #start
+        bitArray[3] = data.status
+    if data.ID == "trigger2": #fast up
+        bitArray[0] = data.status
+    if data.ID == "trigger": #slow up
+        bitArray[1] = data.status
+    if data.ID == "pinkie": #down
+        bitArray[2] = data.status
+    if (data.ID == "mode_1") & (data.status == True):
+        mode = 1
+    if (data.ID == "mode_2") & (data.status == True):
+        mode = 0.6
+    if (data.ID == "mode_3") & (data.status == True):
+        mode = 0.3
     
-    if data.ID == "thumb2":
-        thumb2 = data.status
-    if data.ID == "trigger":
-        trigger = data.status
-    if data.ID == "pinkie":
-        pinkie = data.status
-    if data.ID == "mode_1":
-        mode_1 = data.status
-    if data.ID == "mode_3":
-        mode_3 = data.status
+    if (data.ID == "thumb") & (data.status == True): #stop
+        GPIO.output(12,0) #disable 12V
+    if (data.ID == "cpad_left") & (data.status == True): #start
+        GPIO.output(12,1) #enable 12V
     
-    if thumb2:
-        buttComm+="G " #go
-    if trigger:
-        buttComm+="U " #up
-    if pinkie:
-        buttComm+="D " #down
-    if (trigger or pinkie) and (mode_1 or mode_3): #speed control
-        buttComm+="V";
-        if mode_1: #speed down
-            buttComm+="-"
-        elif mode_3: #speed up
-            buttComm+="+"
-        buttComm+=" "
-        
-    if data.ID == "thumb"  and data.status == True:
-        buttComm="SSS" #stop
+    
+    comm[3] = 0
+    for i in range(8):
+        comm[3] += bitArray[i]<<i
         
 def joystickAxisCallback(data):
-    global axisComm
-    axisComm=""
+    global comm
+    global mode
     
-    global x
-    global y
-    global y_pad
-    global x_pad
+    if data.ID == "x": #laterale
+        comm[1] = int((data.status*127*mode)+127)
+    if data.ID == "y": #anvanti
+        comm[0] = int((data.status*127*mode)+127)
+    if data.ID == "rz": #rotazione
+        comm[2] = int((data.status*127*mode)+127)
+
+def initializeSPI():
+    resp = [3]
+    test = 3
     
-    if data.ID == "x":
-        x = int(data.status*100)
-    if data.ID == "y":
-        y = int(data.status*100)
-    if data.ID == "y_pad":
-        y_pad = int(data.status*100)
-    if data.ID == "x_pad":
-        x_pad = int(data.status*100)
+    publishMessages(NODE.ROV, "Trying to connect to ATMega...")
+    
+    while resp[0] > 1:
+        resp = spi.xfer2([test])
+        resp = spi.xfer2([0])
+        if (test == resp[0]):
+            test -= 1
+            
+    resp = spi.xfer2([5]) # end the initialization process
         
-    axisComm+="RX"+str(x)+"  "
-    axisComm+="RY"+str(y)+"  "
-    axisComm+="LY"+str(y_pad)+"  "
-    axisComm+="LX"+str(x_pad)+"  "
+    publishMessages(NODE.ROV, "ATMega connected and enabled.")
+    publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
 
 def main():
     errMessInit() #init topics
     
-    global check
-    global buttComm
-    global axisComm
+    # command array: [y x rz [trigger2 trigger pinkie thumb2 thumb 1 0 1]]
+    # (avanti, lato, rotazione, [fastUp slowUp down start stop 1 0 1])
+    global comm
+    global bitArray
+    global mode
     
-    global thumb2
-    global trigger
-    global pinkie
-    global mode_1
-    global mode_3
+    comm = [127, 127, 127, 160] # 127: mean value (0:255) for axis, 160: byte corresponding to the bit array
+    bitArray = [0, 0, 0, 0, 0, 1, 0, 1]
+
+    mode = 1
+    ind = 0
+    resp = [0,0,0,0b10100000]
     
-    global x
-    global y
-    global y_pad
-    global x_pad
-    
-    thumb2 = False
-    trigger = False
-    pinkie = False
-    mode_1 = False
-    mode_3 = False
-    
-    x = 0
-    y = 0
-    x_pad = 0
-    y_pad = 0
-    
-    buttComm = ""
-    axisComm = ""
+    values = sensors_data()
 
     #subscriber
     joystick_butt_sub = rospy.Subscriber("joystick_buttons", joystick_buttons, joystickButtCallback)
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
-    prec_check = -1
-    delayed = False
+    rate = rospy.Rate(50) # 50 Hz
+
+#    initializeSPI()
+    
     while not rospy.is_shutdown():
-        #check for check variable
-#        if prec_check==check: #if it has been the same too long, we're not receiving joystick data
-#            if not delayed: #if it's the first time we see this
-#                commands_pub.publish("SSS") #send stop signal (DO NOT send it always if you want to have the possibility to use command line)
-#            delayed = True
-#        else:
-#            delayed = False
-#        prec_check = check
         
-        if buttComm != "SSS":
-            comm = buttComm + axisComm
+        resp[ind] = spi.xfer2([comm[ind]])[0]
+        if ind < 3:
+            ind += 1
         else:
-            comm = buttComm
+            ind = 0
+        
+        values.roll = resp[0]
+        values.pitch = resp[1]
+        values.pressure = resp[2]
+        values.temperature = (resp[3]&0b00011111) + 20
+        
+        if ((resp[3]&0b11100000)>>5) - 0b00000101 != 0:
+            publishErrors("spi_talker", "SPI communication error: data mismatched")
+            GPIO.output(7,0) # reset the atMega
+            time.sleep(0.1)
+            GPIO.output(7,1)
+            time.sleep(0.1)
+            
+            rep[3] = 0b10100000
+            
+            ind = 0
         
         try: #publish commands
-            commands_pub.publish(comm)
+            sensors_pub.publish(values)
         except rospy.ROSInterruptException as e:
-            publishErrors(NODE.JOYSUB, "Commands topic publisher: "+str(e))
+            publishErrors("spi_talker", "Sensors data publisher: "+str(e))
         
-        sleep(0.1) #wait for 0.1 seconds
+        rate.sleep()
 
 if __name__ == '__main__':
     main()
