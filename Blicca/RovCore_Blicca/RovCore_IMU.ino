@@ -8,29 +8,10 @@ void initI2C(){
   // Start I2C transmission
   Wire.beginTransmission(IMU_ADDR);
   // Select gyroscope configuration register
-  Wire.write(0x1B);
-  // Full scale range = 2000 dps
-  Wire.write(0x18);
-  // Stop I2C transmission
-  Wire.endTransmission();
-  
-  // Start I2C transmission
-  Wire.beginTransmission(IMU_ADDR);
-  // Select accelerometer configuration register
-  Wire.write(0x1C);
-  // Full scale range = +/-16g
-  Wire.write(0x18);
-  // Stop I2C transmission
-  Wire.endTransmission();
-  
-  // Start I2C transmission
-  Wire.beginTransmission(IMU_ADDR);
-  // Select power management register
   Wire.write(0x6B);
-  // PLL with xGyro reference
-  Wire.write(0x01);
-  // Stop I2C transmission
-  Wire.endTransmission();
+  
+  Wire.write(0);     // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);
 }
 
 //function for IMU data calculations
@@ -75,8 +56,8 @@ void ComplementaryFilter(float accData[3], float gyrData[3])
 
 //function to read IMU data
 void imuRead() {
-  uint8_t data[6];
   float accData[3], gyroData[3];
+  int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
   
   // Start I2C transmission
   Wire.beginTransmission(IMU_ADDR);
@@ -85,48 +66,24 @@ void imuRead() {
   // Stop I2C transmission
   Wire.endTransmission();
   
-  // Request 6 bytes of data
-  Wire.requestFrom(IMU_ADDR, 6);
+  Wire.requestFrom(IMU_ADDR,14,true);  // request a total of 14 registers
+  AcX=Wire.read()<<8|Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)
+  AcY=Wire.read()<<8|Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+  AcZ=Wire.read()<<8|Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+  Tmp=Wire.read()<<8|Wire.read();  // 0x41 (TEMP_OUT_H) & 0x42 (TEMP_OUT_L)
+  GyX=Wire.read()<<8|Wire.read();  // 0x43 (GYRO_XOUT_H) & 0x44 (GYRO_XOUT_L)
+  GyY=Wire.read()<<8|Wire.read();  // 0x45 (GYRO_YOUT_H) & 0x46 (GYRO_YOUT_L)
+  GyZ=Wire.read()<<8|Wire.read();  // 0x47 (GYRO_ZOUT_H) & 0x48 (GYRO_ZOUT_L)
   
-  // Read 6 byte of data 
-  if(Wire.available() == 6)
-  {
-    data[0] = Wire.read();
-    data[1] = Wire.read();
-    data[2] = Wire.read();
-    data[3] = Wire.read();
-    data[4] = Wire.read();
-    data[5] = Wire.read(); 
-  }
   // Convert the data
-  float xAccl = float(data[0] * 256 + data[1] - 31.5)/2060.5;
-  float yAccl = float(data[2] * 256 + data[3] + 61)/2061.5;
-  float zAccl = float(data[4] * 256 + data[5] + 319.1)/2092.8;
+  float xAccl = float(AcX - 1089.4)/16436;
+  float yAccl = float(AcY + 496.4)/16357;
+  float zAccl = float(AcZ + 1396.8)/16802.6;
 
-  // Start I2C transmission
-  Wire.beginTransmission(IMU_ADDR);
-  // Select data register 
-  Wire.write(0x43);
-  // Stop I2C transmission
-  Wire.endTransmission();
-  
-  // Request 6 bytes of data
-  Wire.requestFrom(IMU_ADDR, 6);
-  
-  // Read 6 byte of data 
-  if(Wire.available() == 6)
-  {
-    data[0] = Wire.read();
-    data[1] = Wire.read();
-    data[2] = Wire.read();
-    data[3] = Wire.read();
-    data[4] = Wire.read();
-    data[5] = Wire.read(); 
-  }
   // Convert the data
-  float xGyro = (data[0] * 256 + data[1] + 50)*1.285;
-  float yGyro = (data[2] * 256 + data[3] - 28.5)*1.2;
-  float zGyro = (data[4] * 256 + data[5] + 5.5)*0.86;
+  float xGyro = (GyX + 159.07);
+  float yGyro = (GyY - 115.9);
+  float zGyro = (GyZ + 141.44);
 
   //save data for further calculations
   accData[0] = xAccl;
