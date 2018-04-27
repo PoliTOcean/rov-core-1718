@@ -138,7 +138,7 @@ def main():
             GPIO.output(7,1)
             time.sleep(0.1)
             
-            rep[3] = 0b10100000
+            resp[3] = 0b10100000
             ind = 0
             publishMessages(NODE.ROV, "ATMega connected and enabled.")
             publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
