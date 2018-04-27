@@ -23,7 +23,7 @@ Servo T200_8;
  */
 
 //variables for joystick values
-int up, down, fastV, rx, ry, ly, lx;
+int up, down, fastV;
 
 // variables needed by SPI code
 volatile char buf[4];
@@ -149,12 +149,12 @@ void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte p
 float calcPitchPower(float kAng){
   /* it takes the difference between current pitch and the requested one from the joystick
    * and multiplicates it for a multiplication constant, passed as parameter */
-  return kAng*(pitch+ly*ANG_MUL); //(+ is because of the inversion of y-axis on the joystick)
+  return kAng*(pitch); //(+ is because of the inversion of y-axis on the joystick)
 }
 
 //function for roll power calculation. Same as above, without sign inversion
 float calcRollPower(float kAng){
-  return kAng*(roll-lx*ANG_MUL);
+  return kAng*(roll);
 }
 
 //function to evaluate vertical motors values
@@ -198,32 +198,7 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
  * leftValue and rightValue are the powers of horizontal servos */
  // TO BE MODIFIED
 void evaluateHorizontal(int *leftValue, int *rightValue, int *leftBValue, int *rightVBalue){
-  int val, sign=1, valR, valL, pivSpeed;
-  float fPivScale=0.0;
   
-  //take the front/back value from joystick
-  val = valL = valR = -ry*H_MUL;
-      
-  //check movement for rotation inversion
-  if(-ry > 0) sign=1;  //front
-  else sign=-1;        //back (so invert when turning)
-  
-  //values for "simple" rotation
-  valR -= rx*H_MUL*sign;
-  valL += rx*H_MUL*sign;
-
-  /* Now follow throttle and pivot calculations for a more clever turning algorithm. */
-  //throttle
-  valR = valR*((float)val/((abs(rx)+100)*H_MUL))*sign;
-  valL = valL*((float)val/((abs(rx)+100)*H_MUL))*sign;
-  //pivot
-  pivSpeed = rx*H_MUL;
-  if(abs(val)<=PIV_LIM)
-    fPivScale = 1.0 - (float)abs(val)/PIV_LIM;
-
-  //save final values
-  *leftValue  = (1.0-fPivScale)*valL + fPivScale*pivSpeed;
-  *rightValue = (1.0-fPivScale)*valR + fPivScale*(-pivSpeed);
 }
 
 //function to set all servos values
