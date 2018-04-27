@@ -13,14 +13,15 @@
 #define dST 2                 // serial timer timeout in seconds  (2")
 #define safedT 30              // safe timer timeout in seconds (3")   ->  consider this if we want to be able \
                                                                           to command it using command line
-
 //esc servos pins
-#define escPin_1 10
-#define escPin_2 9
-#define escPin_3 8
-#define escPin_4 7
+#define escPin_1 2
+#define escPin_2 3
+#define escPin_3 4
+#define escPin_4 5
 #define escPin_5 6
-#define escPin_6 5
+#define escPin_6 7
+#define escPin_7 7
+#define escPin_8 8
 
 /*Multiplicative constants*/
 #define K_ANG 1200            // P control constant
@@ -42,7 +43,7 @@ RBD::Timer timer, safeTimer;         //needed for the IMU reading process: it te
 //sensors variables
 MS5837 pressure;
 int start;                            //ROV start/stop flag
-int valR, valL;                       //values of horizontal movement
+int valLF, valRF, valLB, valRB;                       //values of horizontal movement
 float reqPress, curPress, curTemp, pitch, roll;    //sensors values
 
 //setup function
@@ -50,7 +51,7 @@ void setup(){
   initI2C();              //IMU communication protocol initialization
   
   //set the ESC Servos pins in the right way
-  initEscServos(escPin_1, escPin_2, escPin_3, escPin_4, escPin_5, escPin_6);
+  initEscServos(escPin_1, escPin_2, escPin_3, escPin_4, escPin_5, escPin_6, escPin_7, escPin_8);
   
   //sensors initialization
   pressure.init();
@@ -91,10 +92,10 @@ void loop(){
     evaluateVertical(0, 0, vertical);           //then evaluate them just for joystick up/down
 #endif
 
-    evaluateHorizontal(&valL, &valR);           //evaluate values for horizontal movement
+    evaluateHorizontal(&valLF, &valRF, &valLB, &valRB);           //evaluate values for horizontal movement
 
     //set new motors powers
-    setServosValues(valL, valR, vertical[0], vertical[1], vertical[2], vertical[3], MAX_SRV);
+    setServosValues(valLF, valRF, valLB, valRB, vertical[0], vertical[1], vertical[2], vertical[3], MAX_SRV);
   }else                                 //else, if the ROV is stopped,
-    setServosValues(0, 0, 0, 0, 0, 0, 0);       //then send STOP signal to motors
+    setServosValues(0, 0, 0, 0, 0, 0, 0, 0, 0);       //then send STOP signal to motors
 }

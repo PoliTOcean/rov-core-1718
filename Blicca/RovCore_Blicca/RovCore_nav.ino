@@ -9,12 +9,15 @@ Servo T200_3;
 Servo T200_4;
 Servo T200_5;
 Servo T200_6;
+Servo T200_7;
+Servo T200_8;
 /* SERVO MAP
  *  
  *    FRONT
- *    6   3     -> up/down
- *    5   4     -> front/back
- *    1   2     -> up/down
+ *    7   4     -> up/down
+ *    5   2     -> front/back
+ *    3   6     -> front/back
+ *    1   8     -> up/down
  *    BACK
  *  
  */
@@ -123,7 +126,7 @@ void setServoMicroseconds(Servo s, int value, int MAX_VAL) {
 }
 
 //function to set right pins to the ESC Servos
-void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte pin6){
+void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte pin6,  byte pin7, byte pin8){
   T200_1.attach(pin1);
   setServoMicroseconds(T200_1, 0, MAX_IMU); // send "stop" signal to ESC.
   T200_2.attach(pin2);
@@ -136,6 +139,10 @@ void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte p
   setServoMicroseconds(T200_5, 0, MAX_IMU); // send "stop" signal to ESC.
   T200_6.attach(pin6);
   setServoMicroseconds(T200_6, 0, MAX_IMU); // send "stop" signal to ESC.
+  T200_7.attach(pin7);
+  setServoMicroseconds(T200_7, 0, MAX_IMU); // send "stop" signal to ESC.
+  T200_8.attach(pin8);
+  setServoMicroseconds(T200_8, 0, MAX_IMU); // send "stop" signal to ESC.
 }
 
 //function for pitch power calculation
@@ -189,7 +196,8 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
 
 /* function to evaluate powers for horizontal movement.
  * leftValue and rightValue are the powers of horizontal servos */
-void evaluateHorizontal(int *leftValue, int *rightValue){
+ // TO BE MODIFIED
+void evaluateHorizontal(int *leftValue, int *rightValue, int *leftBValue, int *rightVBalue){
   int val, sign=1, valR, valL, pivSpeed;
   float fPivScale=0.0;
   
@@ -219,15 +227,17 @@ void evaluateHorizontal(int *leftValue, int *rightValue){
 }
 
 //function to set all servos values
-void setServosValues(int valL, int valR, int v0, int v1, int v2, int v3, int MAX_VALUE){
+void setServosValues(int valLF, int valRF, int valLB, int valRB, int v0, int v1, int v2, int v3, int MAX_VALUE){
   //front/back
-  setServoMicroseconds(T200_4, valR, MAX_VALUE);
-  setServoMicroseconds(T200_5, valL, MAX_VALUE);
+  setServoMicroseconds(T200_5, valLF, MAX_VALUE);
+  setServoMicroseconds(T200_2, valRF, MAX_VALUE);
+  setServoMicroseconds(T200_3, valLB, MAX_VALUE);
+  setServoMicroseconds(T200_6, valRB, MAX_VALUE);
 
   //up/down
-  setServoMicroseconds(T200_1, v0, MAX_VALUE);
-  setServoMicroseconds(T200_2, v1, MAX_VALUE);
-  setServoMicroseconds(T200_3, v2, MAX_VALUE);
-  setServoMicroseconds(T200_6, v3, MAX_VALUE);
+  setServoMicroseconds(T200_7, v0, MAX_VALUE);
+  setServoMicroseconds(T200_4, v1, MAX_VALUE);
+  setServoMicroseconds(T200_1, v2, MAX_VALUE);
+  setServoMicroseconds(T200_8, v3, MAX_VALUE);
 }
 
