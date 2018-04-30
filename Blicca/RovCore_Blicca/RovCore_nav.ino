@@ -194,11 +194,15 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
   vertical[3] += linSaturation(valUD, MAX_UD);
 }
 
-/* function to evaluate powers for horizontal movement.
- * leftValue and rightValue are the powers of horizontal servos */
- // TO BE MODIFIED
-void evaluateHorizontal(int *leftValue, int *rightValue, int *leftBValue, int *rightVBalue){
-  
+/* function to evaluate powers for horizontal movement.*/
+void evaluateHorizontal(int *leftFront,int  *rightFront,int  *leftBack,int  *rightBack) {
+  { // I puntatori si riferiscono ai motori
+    int signLF = -1; int signRF = 1; int signLB = -1; int signRB = 1;
+    *leftFront = H_MUL * signLF * (y+x+rz);
+    *rightFront = H_MUL * signRF* (y-x-rz);
+    *leftBack = H_MUL * signLB * (y+x-rz);
+    *rightBack = H_MUL * signRB * (y-x+rz);
+  }
 }
 
 //function to set all servos values
