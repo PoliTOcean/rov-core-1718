@@ -17,6 +17,6 @@
     <node pkg="politocean" name="claw" type="attuatore.py" required="true">
     </node>
 
-    node pkg="politocean" name="ultrasounds" type="ultrasounds.py" required="true">
+    <node pkg="politocean" name="ultrasounds" type="ultrasounds.py" required="true">
     </node>
 </launch>
