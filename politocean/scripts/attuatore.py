@@ -76,7 +76,7 @@ def main():
 
     errMessInit() #init topics
 
- while not rospy.is_shutdown():
+    while not rospy.is_shutdown():
 
         if ( d_butt == 1 ) :
            apri()
