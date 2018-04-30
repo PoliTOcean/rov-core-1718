@@ -3,6 +3,7 @@ import smbus
 
 def reset():
     global bus
+    global adg_addr
     bus.write_byte(adg_addr, 0x00)
 
 def setBit(v, index, x):
@@ -32,6 +33,7 @@ def writeChannel(channel, state):
 
 def micro_stepping(select, mode):
     global bus
+    global adg_addr
     # select: 0 - 1
     # mode: 1 - 32 (see options below)
     adg_addr = 0x48
