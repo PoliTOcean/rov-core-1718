@@ -51,8 +51,11 @@ def main():
     rate = rospy.Rate(50) # 50 Hz
     
     while not rospy.is_shutdown():
-        # Move servo on channel 3
-        pwm.set_pwm(3, 0, servo_val)
+        try:
+            # Move servo on channel 3
+            pwm.set_pwm(3, 0, servo_val)
+        except:
+            pass
         
         if up:
             if servo_val < servo_max - interval:
