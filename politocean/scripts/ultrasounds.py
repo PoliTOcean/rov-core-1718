@@ -35,3 +35,6 @@ def main():
     while not rospy.is_shutdown():
         if sgancio:
             ser.write('A')        #open
+
+if __name__ == '__main__':
+    main()
