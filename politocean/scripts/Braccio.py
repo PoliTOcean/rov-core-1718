@@ -72,6 +72,8 @@ def main():
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
     errMessInit() #init topics
+
+    micro_stepping(0,2)
     
     while (Status != -1):
         sleep(.1)
@@ -99,7 +101,6 @@ def main():
             publishErrors("Braccio", "Errore lettura Joystick\n")
             
         else:
-            micro_stepping(0,2)
             GPIO.output(EN_n1, 0)
             NormMode()
             GPIO.output(EN_n1, 1)
