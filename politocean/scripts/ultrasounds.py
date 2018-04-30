@@ -27,6 +27,7 @@ def main():
     errMessInit() #init topics
     
     global sgancio
+    sgancio = 0
     
     joystick_butt_sub = rospy.Subscriber("joystick_buttons", joystick_buttons, joystickButtCallback)
     
