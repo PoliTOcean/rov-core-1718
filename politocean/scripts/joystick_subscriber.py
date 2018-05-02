@@ -134,7 +134,7 @@ def main():
     
     rate = rospy.Rate(50) # 50 Hz
     
-    while(init != 0):
+    while(init == 0):
         pass
 
 #    initializeSPI()
