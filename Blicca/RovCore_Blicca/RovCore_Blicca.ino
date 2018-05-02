@@ -8,7 +8,6 @@
 /*Important values initialization*/
 #define IMU_ADDR 0x68         // IMU IMU_ADDRess
 #define STOP 1500             // frequency for a still rotor
-#define GYRO_SENS PI/1400.0   // gyroscope sensitivity
 #define dt 0.01               // IMU timer timeout in seconds  (10ms)
 #define dST 2                 // serial timer timeout in seconds  (2")
 #define safedT 30              // safe timer timeout in seconds (3")   ->  consider this if we want to be able \
@@ -20,12 +19,12 @@
 #define escPin_4 5
 #define escPin_5 6
 #define escPin_6 7
-#define escPin_7 7
-#define escPin_8 8
+#define escPin_7 8
+#define escPin_8 9
 
 /*Multiplicative constants*/
 #define K_ANG 1200            // P control constant
-#define H_MUL 2               // front-back movement
+#define H_MUL 200             // front-back movement
 #define V_MUL 200             // up-down movement
 #define FAST_V 70             // up-down turbo
 #define ANG_MUL PI/400        // roll, pitch from joystick
@@ -42,8 +41,7 @@
 RBD::Timer timer, safeTimer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
 //sensors variables
 MS5837 pressure;
-int start;                            //ROV start/stop flag
-int valLF, valRF, valLB, valRB;                       //values of horizontal movement
+int start, valLF, valRF, valLB, valRB;                       //values of horizontal movement
 float reqPress, curPress, curTemp, pitch, roll;    //sensors values
 
 //setup function

@@ -27,5 +27,16 @@ void dataRead(){
   buf[1] = pitch;
   buf[2] = curPress;
   buf[3] = op;
+
+  cmdstop = bitRead(ref1,4);
+  cmdstart = bitRead(ref1,3);
+  pinkie = bitRead(ref1,2);
+  trigger = bitRead(ref1,1);
+  trigger2 = bitRead(ref1,0);
+
+  if(cmdstart)
+    startRov();
+  if(cmdstop)
+    stopRov();
 }
 

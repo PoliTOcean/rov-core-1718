@@ -22,9 +22,9 @@ void ComplementaryFilter(float accData[3], float gyrData[3])
     float sdr, sdp, sdy, sr, sp;
     float accTot;
 
-    droll = (gyrData[0] * GYRO_SENS) * dt;   // Angle around the X-axis
-    dpitch = (gyrData[1] * GYRO_SENS) * dt;  // Angle around the Y-axis
-    dyaw = (gyrData[2] * GYRO_SENS) * dt;    // Angle around the Z-axis
+    droll = gyrData[0] * dt;   // Angle around the X-axis
+    dpitch = gyrData[1] * dt;  // Angle around the Y-axis
+    dyaw = gyrData[2] * dt;    // Angle around the Z-axis
 
     cdr=cos(droll);
     cdp=cos(dpitch);

@@ -27,8 +27,7 @@ int up, down, fastV;
 
 // variables needed by SPI code
 volatile char buf[4];
-volatile char ver[3]; //bit check (1 0 1)
-volatile byte pos_spi = 1, ref1, op;
+volatile byte pos_spi = 1, op, ref1;
 volatile float y, x, rz;
 volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 
@@ -36,6 +35,7 @@ volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 ISR (SPI_STC_vect)
 {
   byte c = SPDR;
+  volatile char ver[3]; //bit check (1 0 1)
 
  if (pos_spi < sizeof buf)
     {
@@ -44,53 +44,23 @@ ISR (SPI_STC_vect)
  switch (pos_spi) 
  {
 
- case 0:
+ case 1:
  y = float(c-127)/127;
  break;
 
- case 1:
+ case 2:
  x = float(c-127)/127;
  break;
 
- case 2:
+ case 3:
  rz = float(c-127)/127;
  break;
 
- case 3:
+ case 0:
  ref1 = c;
- 
- ver[0] = bitRead(c,7);
- ver[1] = bitRead(c,6);
- ver[2] = bitRead(c,5);
- cmdstop = bitRead(c,4);
- cmdstart = bitRead(c,3);
- pinkie = bitRead(c,2);
- trigger = bitRead(c,1);
- trigger2 = bitRead(c,0);
-
- if(cmdstart)
-  startRov();
- if(cmdstop)
-  stopRov();
-
- if(trigger)
- {
-  up = 1;
-  down = 0;
-  fastV = 0;
- }
- else if(trigger2)
- {
-  up = 1;
-  down = 0;
-  fastV = 1;
- }
- else if(pinkie)
- {
-  up = 0;
-  down = 1;
-  fastV = 0;
- }
+ ver[0] = bitRead(ref1,7);
+ ver[1] = bitRead(ref1,6);
+ ver[2] = bitRead(ref1,5);
  
  if (ver[0] ==1 && ver[1]==0 && ver[2]==1)
  {
@@ -159,6 +129,31 @@ float calcRollPower(float kAng){
 
 //function to evaluate vertical motors values
 void evaluateVertical(float kAng, float kDep, int vertical[4]){
+ if(trigger)
+ {
+  up = 1;
+  down = 0;
+  fastV = 0;
+ }
+ if(trigger2)
+ {
+  up = 1;
+  down = 0;
+  fastV = 1;
+ }
+ else if(pinkie)
+ {
+  up = 0;
+  down = 1;
+  fastV = 0;
+ }
+ else if(!trigger && !trigger2 && !pinkie)
+ {
+  up = 0;
+  down = 0;
+  fastV = 0;
+ }
+ 
   float pitchPower, rollPower;
   //call above functions for calculations
   pitchPower = calcPitchPower(kAng);
@@ -210,13 +205,13 @@ void setServosValues(int valLF, int valRF, int valLB, int valRB, int v0, int v1,
   //front/back
   setServoMicroseconds(T200_5, valLF, MAX_VALUE);
   setServoMicroseconds(T200_2, valRF, MAX_VALUE);
-  setServoMicroseconds(T200_3, valLB, MAX_VALUE);
-  setServoMicroseconds(T200_6, valRB, MAX_VALUE);
+  setServoMicroseconds(T200_3, -valLB, MAX_VALUE);
+  setServoMicroseconds(T200_6, -valRB, MAX_VALUE);
 
   //up/down
   setServoMicroseconds(T200_7, v0, MAX_VALUE);
-  setServoMicroseconds(T200_4, v1, MAX_VALUE);
-  setServoMicroseconds(T200_1, v2, MAX_VALUE);
+  setServoMicroseconds(T200_4, -v1, MAX_VALUE);
+  setServoMicroseconds(T200_1, -v2, MAX_VALUE);
   setServoMicroseconds(T200_8, v3, MAX_VALUE);
 }
 
