@@ -30,6 +30,8 @@ def joystickButtCallback(data):
     global comm
     global bitArray
     global mode
+    global resp
+    global init
 
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
@@ -55,15 +57,29 @@ def joystickButtCallback(data):
         GPIO.output(12,0) #disable 12V
     if (data.ID == "cpad_left") & (data.status == True): #start
         GPIO.output(12,1) #enable 12V
+    if (data.ID == "cpad_right") & (data.status == True): #reset the atMega
+        publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
+        publishMessages(NODE.ROV, "Resetting the ATMega...")
+        GPIO.output(7,0) # reset the atMega
+        time.sleep(0.1)
+        GPIO.output(7,1)
+        time.sleep(0.1)
+        
+        ind = 0
+        publishMessages(NODE.ROV, "ATMega connected and enabled.")
+        publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
     
     
     comm[3] = 0
     for i in range(8):
         comm[3] += bitArray[i]<<i
         
+    init = 1
+        
 def joystickAxisCallback(data):
     global comm
     global mode
+    global init
     
     if data.ID == "x": #laterale
         comm[1] = int((data.status*127*mode)+127)
@@ -71,6 +87,8 @@ def joystickAxisCallback(data):
         comm[0] = int((data.status*127*mode)+127)
     if data.ID == "rz": #rotazione
         comm[2] = int((data.status*127*mode)+127)
+        
+    init = 1
 
 def initializeSPI():
     resp = [3]
@@ -97,6 +115,9 @@ def main():
     global comm
     global bitArray
     global mode
+    global init
+    
+    init = 0
     
     comm = [127, 127, 127, 160] # 127: mean value (0:255) for axis, 160: byte corresponding to the bit array
     bitArray = [0, 0, 0, 0, 0, 1, 0, 1]
@@ -112,6 +133,9 @@ def main():
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
     rate = rospy.Rate(50) # 50 Hz
+    
+    while(init != 0):
+        pass
 
 #    initializeSPI()
     publishMessages(NODE.ROV, "ATMega connected and enabled.") # per ora ci fidiamo funzioni
@@ -125,8 +149,8 @@ def main():
         else:
             ind = 0
         
-        values.roll = resp[0]
-        values.pitch = resp[1]
+        values.roll = resp[0]*180/3.14
+        values.pitch = resp[1]*180/3.14
         values.pressure = resp[2]
         values.temperature = (resp[3]&0b00011111) + 20
         
