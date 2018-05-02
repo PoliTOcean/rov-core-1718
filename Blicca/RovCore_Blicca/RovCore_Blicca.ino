@@ -6,7 +6,7 @@
 #define TEST 1
 
 /*Important values initialization*/
-#define IMU_ADDR 0x69         // IMU IMU_ADDRess
+#define IMU_ADDR 0x68         // IMU IMU_ADDRess
 #define STOP 1500             // frequency for a still rotor
 #define GYRO_SENS PI/1400.0   // gyroscope sensitivity
 #define dt 0.01               // IMU timer timeout in seconds  (10ms)
