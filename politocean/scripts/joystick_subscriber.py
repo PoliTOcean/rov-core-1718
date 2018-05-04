@@ -41,7 +41,7 @@ def joystickButtCallback(data):
     global bitArray
     global mode
     global resp
-    global init
+    global ind
 
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
@@ -76,7 +76,7 @@ def joystickButtCallback(data):
         GPIO.output(7,0) # reset the atMega
         time.sleep(0.1)
         GPIO.output(7,1)
-        time.sleep(0.1)
+        time.sleep(0.5)
         
         ind = 0
         publishMessages(NODE.ROV, "ATMega connected and enabled.")
@@ -92,7 +92,6 @@ def joystickButtCallback(data):
 def joystickAxisCallback(data):
     global comm
     global mode
-    global init
     
     if data.ID == "x": #laterale
         comm[1] = int((data.status*127*mode)+127)
@@ -101,8 +100,6 @@ def joystickAxisCallback(data):
     if data.ID == "rz": #rotazione
         comm[2] = int((data.status*127*mode)+127)
         
-    init = 1
-
 def initializeSPI():
     resp = [3]
     test = 3
@@ -127,11 +124,9 @@ def main():
     # (avanti, lato, rotazione, [fastUp slowUp down start stop 1 0 1])
     global comm
     global bitArray
-    global mode
-    global init
-    
-    init = 0
-    
+    global mode    
+    global ind
+
     comm = [127, 127, 127, 160] # 127: mean value (0:255) for axis, 160: byte corresponding to the bit array
     bitArray = [0, 0, 0, 0, 0, 1, 0, 1]
 
@@ -146,9 +141,6 @@ def main():
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
     
     rate = rospy.Rate(50) # 50 Hz
-    
-    while(init == 0):
-        continue
 
 #    initializeSPI()
     publishMessages(NODE.ROV, "ATMega connected and enabled.") # per ora ci fidiamo funzioni
