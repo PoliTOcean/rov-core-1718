@@ -8,6 +8,16 @@ from errmess_publisher import *
 import spidev
 import RPi.GPIO as GPIO
 import time
+import serial
+
+ser=serial.Serial(
+port='/dev/ttyAMA0',
+baudrate=300,
+parity=serial.PARITY_NONE,
+stopbits=serial.STOPBITS_ONE,
+bytesize=serial.EIGHTBITS,
+timeout=1
+)
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
@@ -52,6 +62,9 @@ def joystickButtCallback(data):
         mode = 0.6
     if (data.ID == "mode_3") & (data.status == True):
         mode = 0.3
+    
+    if (data.ID == "b_butt") & (data.status == True):
+        ser.write('A')
     
     if (data.ID == "thumb") & (data.status == True): #stop
         GPIO.output(12,0) #disable 12V
@@ -135,7 +148,7 @@ def main():
     rate = rospy.Rate(50) # 50 Hz
     
     while(init == 0):
-        pass
+        continue
 
 #    initializeSPI()
     publishMessages(NODE.ROV, "ATMega connected and enabled.") # per ora ci fidiamo funzioni
