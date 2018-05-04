@@ -67,7 +67,4 @@
         <!-- true to visualize the stream generated -->
         <arg name="visualize" value="false" />
     </include>
-
-    <!-- this line is for: ROS_NAMESPACE=cam_fhd rosrun image_proc image_proc -->
-    <node name="image_proc" pkg="image_proc" type="image_proc" ns="cam_fhd"/>
 </launch>
