@@ -14,7 +14,6 @@ void saveRequestedPressure(){
 void dataRead(){
   imuRead();                              //read IMU data
   curPress = readPress();                 //read pressure
-  curTemp =  25;                          //fake read temperature data
   if(curTemp < 20)
     curTemp = 20;
   else if(curTemp > 51)
