@@ -23,11 +23,10 @@
 #define escPin_8 9
 
 /*Multiplicative constants*/
-#define K_ANG 1200            // P control constant
+#define K_ANG 200             // P control constant
 #define H_MUL 200             // front-back movement
-#define V_MUL 200             // up-down movement
+#define V_MUL 100             // up-down movement
 #define FAST_V 70             // up-down turbo
-#define ANG_MUL PI/400        // roll, pitch from joystick
 #define K_DEP 50              // autoquote
 
 /*Saturation contanst*/
@@ -35,7 +34,6 @@
 #define MAX_UD  300           // max speed for Up/Down movement
 #define MAX_SRV 400           // max speed of ESC servos
 #define MAX_TEMP 45           // max functioning temperature
-#define PIV_LIM H_MUL/2       // pivot limit
 
 /*Global variables definition*/
 RBD::Timer timer, safeTimer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 

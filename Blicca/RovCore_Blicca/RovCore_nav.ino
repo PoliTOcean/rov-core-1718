@@ -160,14 +160,14 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
   rollPower = calcRollPower(kAng);
 
   //set values for pitch
-  vertical[0] =  linSaturation(pitchPower, MAX_IMU);
-  vertical[1] =  linSaturation(pitchPower, MAX_IMU);
-  vertical[2] = -linSaturation(pitchPower, MAX_IMU);
-  vertical[3] = -linSaturation(pitchPower, MAX_IMU);
+  vertical[0] =  -linSaturation(pitchPower, MAX_IMU);
+  vertical[1] =  -linSaturation(pitchPower, MAX_IMU);
+  vertical[2] = linSaturation(pitchPower, MAX_IMU);
+  vertical[3] = linSaturation(pitchPower, MAX_IMU);
 
   //adding values for roll
-  vertical[0] += linSaturation(rollPower, MAX_IMU);
-  vertical[1] -= linSaturation(rollPower, MAX_IMU);
+  vertical[0] -= linSaturation(rollPower, MAX_IMU);
+  vertical[1] += linSaturation(rollPower, MAX_IMU);
   vertical[2] -= linSaturation(rollPower, MAX_IMU);
   vertical[3] += linSaturation(rollPower, MAX_IMU);
 
@@ -193,10 +193,10 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
 void evaluateHorizontal(int *leftFront,int  *rightFront,int  *leftBack,int  *rightBack) {
   { // I puntatori si riferiscono ai motori
     int signLF = -1; int signRF = 1; int signLB = -1; int signRB = 1;
-    *leftFront = H_MUL * signLF * (y+x+rz);
-    *rightFront = H_MUL * signRF* (y-x-rz);
-    *leftBack = H_MUL * signLB * (y+x-rz);
-    *rightBack = H_MUL * signRB * (y-x+rz);
+    *leftFront = H_MUL * signLF * (-y+x+rz);
+    *rightFront = H_MUL * signRF* (-y-x-rz);
+    *leftBack = H_MUL * signLB * (-y-x+rz);
+    *rightBack = H_MUL * signRB * (-y+x-rz);
   }
 }
 
@@ -209,9 +209,9 @@ void setServosValues(int valLF, int valRF, int valLB, int valRB, int v0, int v1,
   setServoMicroseconds(T200_6, -valRB, MAX_VALUE);
 
   //up/down
-  setServoMicroseconds(T200_7, v0, MAX_VALUE);
-  setServoMicroseconds(T200_4, -v1, MAX_VALUE);
-  setServoMicroseconds(T200_1, -v2, MAX_VALUE);
-  setServoMicroseconds(T200_8, v3, MAX_VALUE);
+  setServoMicroseconds(T200_7, -v0, MAX_VALUE);
+  setServoMicroseconds(T200_4, v1, MAX_VALUE);
+  setServoMicroseconds(T200_1, v2, MAX_VALUE);
+  setServoMicroseconds(T200_8, -v3, MAX_VALUE);
 }
 
