@@ -24,24 +24,26 @@ my_pwm.start(0)
 def apri():
         global d_butt
         global fast
+	my_pwm.start(0)
         while(d_butt):
                 GPIO.output(dir_pin, 1) #0 indica la direzione dell'attuatore
                 my_pwm.ChangeDutyCycle(fast)
+		#print fast
+		#print 'apri'
         my_pwm.stop()
         #leggi il val di rx imposta la corrente e apri
-
 
 def chiudi ():
         global i_butt
         global fast
+	my_pwm.start(0)
         while(i_butt):
                 GPIO.output(dir_pin, 0) #1 indica la direzione dell'attuatore
 		my_pwm.ChangeDutyCycle(fast)
+		#print fast
+		#print 'chiudi'
         my_pwm.stop()
         #leggi il val di rx imposta la corrente e chiudi 
-
-
-
 
 def joystickButtCallback(data):
     global i_butt
@@ -73,8 +75,10 @@ def main():
     rx=0
     i_butt=0
     d_butt=0
-
+    #print 'main'
     errMessInit() #init topics
+    
+    rate = rospy.Rate(50) # 50 Hz
 
     while not rospy.is_shutdown():
 
@@ -83,14 +87,11 @@ def main():
 
         if ( i_butt == 1) :
            chiudi()
+           
+        rate.sleep()
 
 
 if __name__ == '__main__':
     main()
 
 GPIO.cleanup()
-
-
-
-	
-
