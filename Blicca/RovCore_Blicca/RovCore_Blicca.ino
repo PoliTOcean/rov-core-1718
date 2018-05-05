@@ -52,7 +52,7 @@ void setup(){
 
   pinMode(MISO, OUTPUT);
   
-  delay(1000);    //delay of 1 second to make actions complete
+  delay(200);    //delay of 0.2 second to make actions complete
   
   //set the IMU timer. dt*1000 => seconds -> milliseconds
   timer.setTimeout(dt*1000);
