@@ -69,7 +69,7 @@ void loop(){
   //array for vertical motors values
   static int vertical[4] = {0, 0, 0, 0};
   //values of horizontal movement
-  static int valLF, valRF, valLB, valRB;
+  static int valLF=0, valRF=0, valLB=0, valRB=0;
 
  /* if(curTemp>=MAX_TEMP) //safe check on temperature. We hope we'll never need that
     stopRov();*/
