@@ -9,7 +9,6 @@
 #define IMU_ADDR 0x68         // IMU IMU_ADDRess
 #define STOP 1500             // frequency for a still rotor
 #define dt 0.01               // IMU timer timeout in seconds  (10ms)
-#define dST 2                 // serial timer timeout in seconds  (2")
 
 //esc servos pins
 #define escPin_1 2
