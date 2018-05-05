@@ -29,7 +29,8 @@ int up, down, fastV;
 volatile char buf[4];
 volatile byte pos_spi = 1, op, ref1;
 volatile float y, x, rz;
-volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop, SPIupdated=false;
+/*volatile*/ bool trigger2, trigger, pinkie, cmdstart, cmdstop; //non dovrebbe servire "volatile", da testare
+volatile bool SPIupdated=false;
 
 // SPI interrupt routine
 ISR (SPI_STC_vect)
