@@ -70,14 +70,15 @@ def initCameras():
     #inizializzo index a 0
     index=0
     bridge = CvBridge() #bridge per conversione al tipo "Image" di ROS
+    #45Hz, ovvero 45fps, ovvero 15fps*3 (15fps per ogni camera)
+    rate = rospy.Rate(45) # 45 Hz
     while not rospy.is_shutdown():
-        #dormo per 0.02s => ca 45Hz, ovvero 45fps, ovvero 15fps*3 (15fps per ogni camera)
-        sleep(0.02)
         #pubblico sui topic, alternativamente, uno alla volta
         if frames[index] is not None:
             pub[index].publish(bridge.cv2_to_imgmsg(frames[index], encoding="bgr8"))
         #aggiorno l'index (0, 1, 2)
         index=(index+1)%3
+        rate.sleep()
 
 
 if __name__ == '__main__':
