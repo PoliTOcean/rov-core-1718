@@ -35,7 +35,7 @@ volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 ISR (SPI_STC_vect)
 {
   byte c = SPDR;
-  volatile char ver[3]; //bit check (1 0 1)
+  char ver[3]; //bit check (1 0 1)
 
  if (pos_spi < sizeof buf)
     {
