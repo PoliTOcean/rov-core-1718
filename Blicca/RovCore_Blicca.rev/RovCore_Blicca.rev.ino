@@ -9,7 +9,6 @@
 #define IMU_ADDR 0x68         // IMU IMU_ADDRess
 #define STOP 1500             // frequency for a still rotor
 #define dt 0.01               // IMU timer timeout in seconds  (10ms)
-#define dST 2                 // serial timer timeout in seconds  (2")
 
 //esc servos pins
 #define escPin_1 2
@@ -53,7 +52,7 @@ void setup(){
 
   pinMode(MISO, OUTPUT);
   
-  delay(1000);    //delay of 1 second to make actions complete
+  delay(200);    //delay of 0.2 second to make actions complete
   
   //set the IMU timer. dt*1000 => seconds -> milliseconds
   timer.setTimeout(dt*1000);
