@@ -38,14 +38,13 @@ def updateFrames(index):
     # in teoria dovrebbe rilevare da solo le telecamere connesse e assegnare loro
     # indici progressivi (la mia del PC aveva index=0 ma ovviamente dopo non ce n'erano altre)
     cap = cv2.VideoCapture(index)
-    bridge = CvBridge() #bridge per conversione al tipo "Image" di ROS
 
     while not rospy.is_shutdown():
         # Catturo il frame (OGNI frame)
         ret, frame = cap.read()
 
         # salvo la conversione in Image, con encoding bgr8 (lo stesso usato nella GUI)
-        frames[index] = bridge.cv2_to_imgmsg(frame, encoding="bgr8")
+        frames[index] = frame
 
     # release delle risorse
     cap.release()
@@ -70,12 +69,13 @@ def initCameras():
 
     #inizializzo index a 0
     index=0
+    bridge = CvBridge() #bridge per conversione al tipo "Image" di ROS
     while not rospy.is_shutdown():
         #dormo per 0.02s => ca 45Hz, ovvero 45fps, ovvero 15fps*3 (15fps per ogni camera)
         sleep(0.02)
         #pubblico sui topic, alternativamente, uno alla volta
         if frames[index] is not None:
-            pub[index].publish(frames[index])
+            pub[index].publish(bridge.cv2_to_imgmsg(frames[index], encoding="bgr8"))
         #aggiorno l'index (0, 1, 2)
         index=(index+1)%3
 
