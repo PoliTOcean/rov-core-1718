@@ -10,8 +10,7 @@
 #define STOP 1500             // frequency for a still rotor
 #define dt 0.01               // IMU timer timeout in seconds  (10ms)
 #define dST 2                 // serial timer timeout in seconds  (2")
-#define safedT 30              // safe timer timeout in seconds (3")   ->  consider this if we want to be able \
-                                                                          to command it using command line
+
 //esc servos pins
 #define escPin_1 2
 #define escPin_2 3
@@ -36,7 +35,7 @@
 #define MAX_TEMP 45           // max functioning temperature
 
 /*Global variables definition*/
-RBD::Timer timer, safeTimer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
+RBD::Timer timer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
 //sensors variables
 MS5837 pressure;
 int start, valLF, valRF, valLB, valRB;                       //values of horizontal movement
@@ -59,9 +58,6 @@ void setup(){
   //set the IMU timer. dt*1000 => seconds -> milliseconds
   timer.setTimeout(dt*1000);
   timer.restart();
-
-  safeTimer.setTimeout(safedT*1000);
-  safeTimer.restart();
 
   // turn on SPI interrupt
   cli();
