@@ -30,8 +30,8 @@ void dataRead(){
   else
     prSpi = curPress - 230;
 
-  buf[0] = int(roll*180/3.14);
-  buf[1] = int(pitch*180/3.14);
+  buf[0] = int(roll*180/3.14+127);
+  buf[1] = int(pitch*180/3.14+127);
   buf[2] = curPress;
   buf[3] = op;
 
