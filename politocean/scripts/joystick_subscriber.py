@@ -68,8 +68,6 @@ def joystickButtCallback(data):
     
     if (data.ID == "b_butt") & (data.status == True): #liftbag release
         ser.write('A')
-    
-    
         
     if (data.ID == "base6") & (data.status == True): #stop only the atMega
         bitArray[4] = data.status #stop
@@ -84,7 +82,6 @@ def joystickButtCallback(data):
         ind = 0
         publishMessages(NODE.ROV, "ATMega connected and enabled.")
         publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
-    
     
     comm[3] = 0
     for i in range(8):
