@@ -38,7 +38,7 @@ RBD::Timer timer;         //needed for the IMU reading process: it tells us when
 //sensors variables
 MS5837 pressure;
 int start, valLF, valRF, valLB, valRB;                       //values of horizontal movement
-float reqPress, curPress, curTemp, pitch, roll;    //sensors values
+float reqPress, curPress, prSpi, curTemp, pitch, roll;    //sensors values
 
 //setup function
 void setup(){

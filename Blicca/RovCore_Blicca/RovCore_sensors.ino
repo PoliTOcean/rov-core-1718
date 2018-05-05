@@ -23,8 +23,15 @@ void dataRead(){
   bitWrite(op,6,0);
   bitWrite(op,7,1);
 
-  buf[0] = roll;
-  buf[1] = pitch;
+  if(curPress < 230) //230 is the ambient pressure
+    prSpi = 0;
+  else if(curPress > 485)
+    prSpi = 255;
+  else
+    prSpi = curPress - 230;
+
+  buf[0] = int(roll*180/3.14);
+  buf[1] = int(pitch*180/3.14);
   buf[2] = curPress;
   buf[3] = op;
 
