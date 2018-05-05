@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import time
 import serial
 
+# utrasound Serail
 ser=serial.Serial(
 port='/dev/ttyAMA0',
 baudrate=300,
@@ -46,9 +47,11 @@ def joystickButtCallback(data):
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
 
-    if data.ID == "cpad_down": #stop only the ROV
-        bitArray[4] = data.status
+    if (data.ID == "thumb") & (data.status == True): #stop
+        bitArray[4] = data.status #stop
+        GPIO.output(12,0) #disable 12V
     if data.ID == "thumb2": #start
+        GPIO.output(12,1) #enable 12V
         bitArray[3] = data.status
     if data.ID == "trigger2": #fast up
         bitArray[0] = data.status
@@ -56,27 +59,27 @@ def joystickButtCallback(data):
         bitArray[1] = data.status
     if data.ID == "pinkie": #down
         bitArray[2] = data.status
-    if (data.ID == "mode_1") & (data.status == True):
+    if (data.ID == "mode_1") & (data.status == True): #fast mode
         mode = 1
-    if (data.ID == "mode_2") & (data.status == True):
+    if (data.ID == "mode_2") & (data.status == True): #normal mode
         mode = 0.6
-    if (data.ID == "mode_3") & (data.status == True):
+    if (data.ID == "mode_3") & (data.status == True): #slow mode
         mode = 0.3
     
-    if (data.ID == "b_butt") & (data.status == True):
+    if (data.ID == "b_butt") & (data.status == True): #liftbag release
         ser.write('A')
     
-    if (data.ID == "thumb") & (data.status == True): #stop
-        GPIO.output(12,0) #disable 12V
-    if (data.ID == "cpad_left") & (data.status == True): #start
-        GPIO.output(12,1) #enable 12V
-    if (data.ID == "cpad_right") & (data.status == True): #reset the atMega
+    
+        
+    if (data.ID == "base6") & (data.status == True): #stop only the atMega
+        bitArray[4] = data.status #stop
+    if (data.ID == "base5") & (data.status == True): #reset the atMega
         publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
         publishMessages(NODE.ROV, "Resetting the ATMega...")
         GPIO.output(7,0) # reset the atMega
         time.sleep(0.1)
         GPIO.output(7,1)
-        time.sleep(0.5)
+        time.sleep(1)
         
         ind = 0
         publishMessages(NODE.ROV, "ATMega connected and enabled.")
@@ -86,9 +89,7 @@ def joystickButtCallback(data):
     comm[3] = 0
     for i in range(8):
         comm[3] += bitArray[i]<<i
-        
-    init = 1
-        
+                
 def joystickAxisCallback(data):
     global comm
     global mode
@@ -99,23 +100,6 @@ def joystickAxisCallback(data):
         comm[0] = int((data.status*127*mode)+127)
     if data.ID == "rz": #rotazione
         comm[2] = int((data.status*127*mode)+127)
-        
-def initializeSPI():
-    resp = [3]
-    test = 3
-    
-    publishMessages(NODE.ROV, "Trying to connect to ATMega...")
-    
-    while resp[0] > 1:
-        resp = spi.xfer2([test])
-        resp = spi.xfer2([0])
-        if (test == resp[0]):
-            test -= 1
-            
-    resp = spi.xfer2([5]) # end the initialization process
-        
-    publishMessages(NODE.ROV, "ATMega connected and enabled.")
-    publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
 
 def main():
     errMessInit() #init topics
@@ -142,7 +126,6 @@ def main():
     
     rate = rospy.Rate(50) # 50 Hz
 
-#    initializeSPI()
     publishMessages(NODE.ROV, "ATMega connected and enabled.") # per ora ci fidiamo funzioni
     publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
     
@@ -159,14 +142,14 @@ def main():
         values.pressure = resp[2]
         values.temperature = (resp[3]&0b00011111) + 20
         
-        if ((resp[3]&0b11100000)>>5) - 0b00000101 != 0:
+        if ((resp[3]&0b11100000)>>5) - 0b00000101 != 0: #if the 3 known bits do not match, reset
             publishErrors("spi_talker", "SPI communication error: data mismatched")
             publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
             publishMessages(NODE.ROV, "Trying to connect to ATMega...")
             GPIO.output(7,0) # reset the atMega
             time.sleep(0.1)
             GPIO.output(7,1)
-            time.sleep(0.1)
+            time.sleep(1)
             
             resp[3] = 0b10100000
             ind = 0
@@ -175,6 +158,7 @@ def main():
         
         try: #publish commands
             sensors_pub.publish(values)
+            publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
         except rospy.ROSInterruptException as e:
             publishErrors("spi_talker", "Sensors data publisher: "+str(e))
         
