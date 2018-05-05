@@ -15,7 +15,6 @@ CCW = 0    # Counterclockwise Rotation
 SPR = 200  # Steps per Revolution (360 /1.7) Sensibility of nema 1.7deg
 EN_n1 = 22
 
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(DIR, GPIO.OUT)
 GPIO.setup(STEP, GPIO.OUT)
@@ -78,7 +77,7 @@ def main():
     while not rospy.is_shutdown(): 
     
         if ( e_butt == 1 ) :
-            micro_stepping(1,2)
+            micro_stepping(1,1)
             GPIO.output(EN_n1, 0)
             if (ry > 0):
                 Rotate_CW()
