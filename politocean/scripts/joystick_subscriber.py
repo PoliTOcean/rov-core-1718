@@ -134,8 +134,8 @@ def main():
         else:
             ind = 0
         
-        values.roll = resp[0]*180/3.14
-        values.pitch = resp[1]*180/3.14
+        values.roll = resp[0]
+        values.pitch = resp[1]
         values.pressure = resp[2]
         values.temperature = (resp[3]&0b00011111) + 20
         
