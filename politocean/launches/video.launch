@@ -6,6 +6,8 @@
         <arg name="video_stream_provider" value="0" />
         <!-- throttling the querying of frames to -->
         <arg name="fps" value="30" />
+        <!--set buffer queue size of frame capturing to-->
+        <arg name="buffer_queue_size" value="5" />
         <!-- setting frame_id -->
         <arg name="frame_id" value="cam_fhd" />
         <!-- camera info loading, take care as it needs the "file:///" at the start , e.g.:
@@ -29,6 +31,8 @@
         <arg name="video_stream_provider" value="1" />
         <!-- throttling the querying of frames to -->
         <arg name="fps" value="30" />
+        <!--set buffer queue size of frame capturing to-->
+        <arg name="buffer_queue_size" value="5" />
         <!-- setting frame_id -->
         <arg name="frame_id" value="cam1" />
         <!-- camera info loading, take care as it needs the "file:///" at the start , e.g.:
@@ -52,6 +56,8 @@
         <arg name="video_stream_provider" value="2" />
         <!-- throttling the querying of frames to -->
         <arg name="fps" value="30" />
+        <!--set buffer queue size of frame capturing to-->
+        <arg name="buffer_queue_size" value="5" />
         <!-- setting frame_id -->
         <arg name="frame_id" value="cam2" />
         <!-- camera info loading, take care as it needs the "file:///" at the start , e.g.:
