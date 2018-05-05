@@ -43,7 +43,7 @@ def updateFrames(index):
         # Catturo il frame (OGNI frame)
         ret, frame = cap.read()
 
-        # salvo la conversione in Image, con encoding bgr8 (lo stesso usato nella GUI)
+        # salvo il frame
         frames[index] = frame
 
     # release delle risorse
@@ -75,6 +75,7 @@ def initCameras():
         sleep(0.02)
         #pubblico sui topic, alternativamente, uno alla volta
         if frames[index] is not None:
+            #converto in Image, con encoding bgr8 (lo stesso usato nella GUI)
             pub[index].publish(bridge.cv2_to_imgmsg(frames[index], encoding="bgr8"))
         #aggiorno l'index (0, 1, 2)
         index=(index+1)%3
