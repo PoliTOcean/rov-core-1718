@@ -1,0 +1,22 @@
+<launch>
+    <include file="$(find politocean)/launches/video.launch" >
+    </include>
+
+    <node pkg="politocean" name="joystick_subscriber" type="joystick_subscriber.py" required="true">
+    </node>
+
+    <node pkg="politocean" name="camera_servo" type="camera_servo.py" required="true">
+    </node>
+
+    <node pkg="politocean" name="arm" type="braccio.py" required="true">
+    </node>
+
+    <node pkg="politocean" name="wrist" type="polso.py" required="true">
+    </node>
+
+    <node pkg="politocean" name="claw" type="attuatore.py" required="true">
+    </node>
+
+    <node pkg="politocean" name="ultrasounds" type="ultrasounds.py" required="true">
+    </node>
+</launch>
