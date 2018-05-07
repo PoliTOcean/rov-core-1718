@@ -81,7 +81,7 @@ void imuRead() {
   // Convert the data
   float xAccl = float(AcX - 1089.4)/16436;
   float yAccl = float(AcY + 496.4)/16357;
-  float zAccl = -float(AcZ + 1396.8)/16802.6;
+  float zAccl = float(AcZ + 1396.8)/16802.6;
 
   // Convert the data
   float xGyro = (GyX + 159.07)/2700;
