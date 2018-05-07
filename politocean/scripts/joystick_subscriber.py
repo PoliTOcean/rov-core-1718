@@ -66,7 +66,7 @@ def joystickButtCallback(data):
     if (data.ID == "mode_3") & (data.status == True): #slow mode
         mode = 0.3
     
-    if (data.ID == "b_butt") & (data.status == True): #liftbag release
+    if (data.ID == "top") & (data.status == True): #liftbag release
         ser.write('A')
         
     if (data.ID == "base6") & (data.status == True): #stop only the atMega
