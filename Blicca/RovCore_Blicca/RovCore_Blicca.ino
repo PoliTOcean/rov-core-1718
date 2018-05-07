@@ -37,8 +37,8 @@
 RBD::Timer timer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
 //sensors variables
 MS5837 pressure;
-int start, valLF, valRF, valLB, valRB;                       //values of horizontal movement
-float reqPress, curPress, prSpi, curTemp, pitch, roll;    //sensors values
+int start, valLF, valRF, valLB, valRB, prSpi;                       //values of horizontal movement
+float reqPress, curPress, curTemp, pitch, roll;    //sensors values
 
 //setup function
 void setup(){
