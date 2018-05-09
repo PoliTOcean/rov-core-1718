@@ -22,8 +22,8 @@ void ComplementaryFilter(float accData[3], float gyrData[3])
     float sdr, sdp, sdy, sr, sp;
     float accTot;
 
-    droll = gyrData[0] * dt;   // Angle around the X-axis
-    dpitch = gyrData[1] * dt;  // Angle around the Y-axis
+    droll = -gyrData[0] * dt;   // Angle around the X-axis (upside-down)
+    dpitch = -gyrData[1] * dt;  // Angle around the Y-axis (upside-down)
     dyaw = gyrData[2] * dt;    // Angle around the Z-axis
 
     cdr=cos(droll);
@@ -46,7 +46,7 @@ void ComplementaryFilter(float accData[3], float gyrData[3])
     accTot = sqrt(pow(abs(accData[0]),2) + pow(abs(accData[1]),2) + pow(abs(accData[2]),2));
     if (accTot > 0.9 && accTot < 1.1)
     {
-        rollAcc = atan2(accData[1], accData[2]);
+        rollAcc = atan2(accData[1], -accData[2]); //(upside-down, accData[2])
         pitchAcc = asin(-accData[0]/fabs(accTot));
 
         roll = roll * 0.9 + rollAcc * 0.1;
@@ -84,9 +84,9 @@ void imuRead() {
   float zAccl = float(AcZ + 1396.8)/16802.6;
 
   // Convert the data
-  float xGyro = (GyX + 159.07)/2700;
-  float yGyro = (GyY - 115.9)/2500;
-  float zGyro = (GyZ + 141.44)/2500;
+  float xGyro = (GyX + 159.07)/1800; //2700 @10ms
+  float yGyro = (GyY - 115.9)/1600; //2500 @10ms
+  float zGyro = (GyZ + 141.44)/1600; //2500 @10ms
 
   //save data for further calculations
   accData[0] = xAccl;

@@ -21,7 +21,7 @@
 #define escPin_8 9
 
 /*Multiplicative constants*/
-#define K_ANG 200             // P control constant
+#define K_ANG 1500            // P control constant
 #define H_MUL 200             // front-back movement
 #define V_MUL 100             // up-down movement
 #define FAST_V 70             // up-down turbo
@@ -52,7 +52,7 @@ void setup(){
 
   pinMode(MISO, OUTPUT);
   
-  delay(200);    //delay of 0.2 second to make actions complete
+  delay(1000);    //delay of 1 second to make actions complete
   
   //set the IMU timer. dt*1000 => seconds -> milliseconds
   timer.setTimeout(dt*1000);

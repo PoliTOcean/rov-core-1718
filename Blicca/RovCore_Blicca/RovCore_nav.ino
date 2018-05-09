@@ -119,12 +119,12 @@ void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte p
 float calcPitchPower(float kAng){
   /* it takes the difference between current pitch and the requested one from the joystick
    * and multiplicates it for a multiplication constant, passed as parameter */
-  return kAng*(pitch); //(+ is because of the inversion of y-axis on the joystick)
+  return kAng*(pitch-6*3.14/180); //(the angle is the orizontal due to the sensor inclination)
 }
 
 //function for roll power calculation. Same as above, without sign inversion
 float calcRollPower(float kAng){
-  return kAng*(roll);
+  return kAng*(roll-3.14/180); //(the angle is the orizontal due to the sensor inclination)
 }
 
 //function to evaluate vertical motors values
