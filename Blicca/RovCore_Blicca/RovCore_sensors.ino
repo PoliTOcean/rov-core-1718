@@ -7,7 +7,7 @@ int readPress(){
 
 //save the requested pressure
 void saveRequestedPressure(){
-  reqPress = readPress();
+  reqPress = curPress;
   savePressure = 0;
 }
 
