@@ -72,7 +72,7 @@ def joystickButtCallback(data):
         GPIO.output(7,0) # reset the atMega
         time.sleep(0.1)
         GPIO.output(7,1)
-        time.sleep(1)
+        time.sleep(2)
 
         ind = 0
         publishMessages(NODE.ROV, "ATMega connected and enabled.")
@@ -161,7 +161,7 @@ def main():
             GPIO.output(7,0) # reset the atMega
             time.sleep(0.1)
             GPIO.output(7,1)
-            time.sleep(1)
+            time.sleep(2)
 
             resp[3] = 0b10100000
             ind = 0
