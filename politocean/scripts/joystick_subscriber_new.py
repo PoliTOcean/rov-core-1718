@@ -36,13 +36,14 @@ def joystickButtCallback(data):
     global resp
     global ind
     global check
+    global reset
 
     check=0 #reset check variable
 
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
 
-    if (data.ID == "thumb"): #stop
+    if data.ID == "thumb": #stop
         bitArray[4] = data.status #stop
         GPIO.output(12,0) #disable 12V
     if data.ID == "thumb2": #start
@@ -61,22 +62,10 @@ def joystickButtCallback(data):
     if (data.ID == "mode_3") & (data.status == True): #slow mode
         mode = 0.3
 
-    if (data.ID == "top") & (data.status == True): #liftbag release
-        ser.write('A')
-
-    if (data.ID == "base6"): #stop only the atMega
+    if data.ID == "base6": #stop only the atMega
         bitArray[4] = data.status #stop
-    if (data.ID == "base5") & (data.status == True): #reset the atMega
-        publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
-        publishMessages(NODE.ROV, "Resetting the ATMega...")
-        GPIO.output(7,0) # reset the atMega
-        time.sleep(0.1)
-        GPIO.output(7,1)
-        time.sleep(2)
-
-        ind = 0
-        publishMessages(NODE.ROV, "ATMega connected and enabled.")
-        publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
+    if data.ID == "base5": #reset the atMega
+        reset = data.status
 
     comm[3] = 0
     for i in range(8):
@@ -110,6 +99,9 @@ def main():
     global bitArray
     global mode
     global ind
+    global reset
+    
+    reset = 0
 
     comm = [127, 127, 127, 160] # 127: mean value (0:255) for axis, 160: byte corresponding to the bit array
     bitArray = [0, 0, 0, 0, 0, 1, 0, 1]
@@ -154,6 +146,18 @@ def main():
         values.pitch = resp[1]-127
         values.pressure = resp[2]
         values.temperature = (resp[3]&0b00011111) + 20
+        
+        if reset:
+            publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
+            publishMessages(NODE.ROV, "User: resetting the ATMega...")
+            GPIO.output(7,0) # reset the atMega
+            time.sleep(0.1)
+            GPIO.output(7,1)
+            time.sleep(2)
+    
+            ind = 0
+            publishMessages(NODE.ROV, "ATMega connected and enabled.")
+            publishComponent(NODE.ROV, ID.ATMEGA, STATUS.ENABLED)
 
         if ((resp[3]&0b11100000)>>5) - 0b00000101 != 0: #if the 3 known bits do not match, reset
             publishErrors("spi_talker", "SPI communication error: data mismatched")
