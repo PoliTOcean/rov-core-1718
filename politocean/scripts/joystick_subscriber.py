@@ -47,7 +47,7 @@ def joystickButtCallback(data):
     bitArray[6] = 0
     bitArray[5] = bitArray[7] = 1
 
-    if (data.ID == "thumb") & (data.status == True): #stop
+    if (data.ID == "thumb"): #stop
         bitArray[4] = data.status #stop
         GPIO.output(12,0) #disable 12V
     if data.ID == "thumb2": #start
@@ -69,7 +69,7 @@ def joystickButtCallback(data):
     if (data.ID == "top") & (data.status == True): #liftbag release
         ser.write('A')
         
-    if (data.ID == "base6") & (data.status == True): #stop only the atMega
+    if (data.ID == "base6"): #stop only the atMega
         bitArray[4] = data.status #stop
     if (data.ID == "base5") & (data.status == True): #reset the atMega
         publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
