@@ -139,6 +139,7 @@ def main():
             b.ID = "thumb"
             b.status = True
             joystickButtCallback(b) #send stop signal
+            publishErrors("joystick_subscriber", "No income data from joystick")
         else:
             check+=1   #increment check
 
