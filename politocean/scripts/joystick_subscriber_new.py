@@ -151,7 +151,7 @@ def main():
             publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
             publishMessages(NODE.ROV, "User: resetting the ATMega...")
             GPIO.output(7,0) # reset the atMega
-            time.sleep(0.1)
+            time.sleep(0.5)
             GPIO.output(7,1)
             time.sleep(2)
     
@@ -164,7 +164,7 @@ def main():
             publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)
             publishMessages(NODE.ROV, "Trying to connect to ATMega...")
             GPIO.output(7,0) # reset the atMega
-            time.sleep(0.1)
+            time.sleep(0.5)
             GPIO.output(7,1)
             time.sleep(2)
 
