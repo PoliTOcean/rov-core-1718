@@ -3,24 +3,20 @@
 import rospy
 from politocean.msg import *
 from errmess_publisher import *
-import serial
+import RPi.GPIO as GPIO
+import time
 
-ser=serial.Serial(
-port='/dev/ttyAMA0',
-baudrate=300,
-parity=serial.PARITY_NONE,
-stopbits=serial.STOPBITS_ONE,
-bytesize=serial.EIGHTBITS,
-timeout=1
-)
-
+GPIO.setmode(GPIO.BCM)
+TX=14
+GPIO.setup(TX, GPIO.OUT)
+GPIO.output(TX, 1)  
 #set node name
 rospy.init_node("ultrasounds", anonymous=False)
 
 def joystickButtCallback(data):
     global sgancio
 
-    if data.ID == "b_butt": #stop only the ROV
+    if data.ID == "top": #stop only the ROV
         sgancio = data.status
 
 def main():
@@ -35,8 +31,17 @@ def main():
 
     while not rospy.is_shutdown():
         if sgancio:
-            ser.write('A')        #open
-            
+	     GPIO.output(TX, 0)
+      	     time.sleep(0.0034)
+             GPIO.output(TX, 1)
+             time.sleep(0.0034)
+             GPIO.output(TX, 0)
+             time.sleep(0.017)
+             GPIO.output(TX, 1)
+             time.sleep(0.0034)
+             GPIO.output(TX, 0)
+             time.sleep(0.0034)
+             GPIO.output(TX, 1)            
         rate.sleep()
 
 if __name__ == '__main__':

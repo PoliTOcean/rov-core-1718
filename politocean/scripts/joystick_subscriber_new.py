@@ -8,18 +8,7 @@ from errmess_publisher import *
 import spidev
 import RPi.GPIO as GPIO
 import time
-import serial
 from std_msgs.msg import Bool
-
-# utrasound Serail
-ser=serial.Serial(
-port='/dev/ttyAMA0',
-baudrate=300,
-parity=serial.PARITY_NONE,
-stopbits=serial.STOPBITS_ONE,
-bytesize=serial.EIGHTBITS,
-timeout=1
-)
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BOARD)
