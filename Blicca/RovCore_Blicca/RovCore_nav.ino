@@ -34,13 +34,10 @@ volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 // SPI interrupt routine
 ISR (SPI_STC_vect)
 {
-  byte c = SPDR;
-  char ver[3]; //bit check (1 0 1)
+ byte c = SPDR;
 
- if (pos_spi < sizeof buf)
-    {
-    SPDR = buf [pos_spi];
-    }
+ SPDR = buf [pos_spi];
+
  switch (pos_spi) 
  {
 
@@ -62,9 +59,11 @@ ISR (SPI_STC_vect)
  ver[1] = bitRead(ref1,6);
  ver[2] = bitRead(ref1,5);
  
- if (ver[0] ==1 && ver[1]==0 && ver[2]==1)
+ if (ver[0]!=1 || ver[1]!=0 || ver[2]!=1)
  {
-  ;
+  SPDR = 0;
+  ver[0] = ver[2] = 1;
+  ver[1] = 0;
  }
  break;
 

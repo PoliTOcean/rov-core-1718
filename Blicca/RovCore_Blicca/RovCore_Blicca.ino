@@ -37,12 +37,17 @@
 RBD::Timer timer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
 //sensors variables
 MS5837 pressure;
-int start, valLF, valRF, valLB, valRB, prSpi;                       //values of horizontal movement
+int start = 0, valLF, valRF, valLB, valRB, prSpi;                       //values of horizontal movement
 float reqPress, curPress, curTemp, pitch, roll;    //sensors values
+char ver[3]; //bit check for spi (1 0 1)
+
 
 //setup function
 void setup(){
   initI2C();              //IMU communication protocol initialization
+
+  ver[0] = ver[2] = 1;
+  ver[1] = 0;
   
   //set the ESC Servos pins in the right way
   initEscServos(escPin_1, escPin_2, escPin_3, escPin_4, escPin_5, escPin_6, escPin_7, escPin_8);
