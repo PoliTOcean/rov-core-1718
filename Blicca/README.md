@@ -1,8 +1,12 @@
 # Blicca
 
-### Second version of the ROV's C code (atMega code)
+## Second version of the ROV's C code (atMega code)
+
+### RovCore_Blicca
 
 The current code is RovCore_Blicca.
+
+### RovCore_Blicca.rev
 
 We are working to fix some timing issues, the test code is RovCore_Blicca.rev.
 
