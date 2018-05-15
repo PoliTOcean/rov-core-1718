@@ -29,19 +29,15 @@ int up, down, fastV;
 volatile char buf[4];
 volatile byte pos_spi = 1, op, ref1;
 volatile float y, x, rz;
-/*volatile*/ bool trigger2, trigger, pinkie, cmdstart, cmdstop; //non dovrebbe servire "volatile", da testare
-volatile bool SPIupdated=false;
+volatile bool trigger2, trigger, pinkie, cmdstart, cmdstop;
 
 // SPI interrupt routine
 ISR (SPI_STC_vect)
 {
-  byte c = SPDR;
-  char ver[3]; //bit check (1 0 1)
+ byte c = SPDR;
 
- if (pos_spi < sizeof buf)
-    {
-    SPDR = buf [pos_spi];
-    }
+ SPDR = buf [pos_spi];
+
  switch (pos_spi) 
  {
 
@@ -63,9 +59,11 @@ ISR (SPI_STC_vect)
  ver[1] = bitRead(ref1,6);
  ver[2] = bitRead(ref1,5);
  
- if (ver[0] ==1 && ver[1]==0 && ver[2]==1)
+ if (ver[0]!=1 || ver[1]!=0 || ver[2]!=1)
  {
-  ;
+  SPDR = 0;
+  ver[0] = ver[2] = 1;
+  ver[1] = 0;
  }
  break;
 
@@ -74,8 +72,6 @@ ISR (SPI_STC_vect)
  pos_spi++;
  if ( pos_spi >= sizeof (buf))
  pos_spi=0;
-
- SPIupdated=true;
   
 }  // end of interrupt service routine (ISR) SPI_STC_vect
 
@@ -122,12 +118,12 @@ void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte p
 float calcPitchPower(float kAng){
   /* it takes the difference between current pitch and the requested one from the joystick
    * and multiplicates it for a multiplication constant, passed as parameter */
-  return kAng*(pitch); //(+ is because of the inversion of y-axis on the joystick)
+  return kAng*(pitch-6*3.14/180); //(the angle is the orizontal due to the sensor inclination)
 }
 
 //function for roll power calculation. Same as above, without sign inversion
 float calcRollPower(float kAng){
-  return kAng*(roll);
+  return kAng*(roll-3.14/180); //(the angle is the orizontal due to the sensor inclination)
 }
 
 //function to evaluate vertical motors values
@@ -193,16 +189,14 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
 }
 
 /* function to evaluate powers for horizontal movement.*/
-void evaluateHorizontal(int *leftFront, int *rightFront, int *leftBack, int *rightBack) {
-    // I puntatori si riferiscono ai motori
+void evaluateHorizontal(int *leftFront,int  *rightFront,int  *leftBack,int  *rightBack) {
+  { // I puntatori si riferiscono ai motori
     int signLF = -1; int signRF = 1; int signLB = -1; int signRB = 1;
-    if(SPIupdated){
-      *leftFront = H_MUL * signLF * (-y+x+rz);
-      *rightFront = H_MUL * signRF* (-y-x-rz);
-      *leftBack = H_MUL * signLB * (-y-x+rz);
-      *rightBack = H_MUL * signRB * (-y+x-rz);
-      SPIupdated=false;
-    }
+    *leftFront = H_MUL * signLF * (-y+x+rz);
+    *rightFront = H_MUL * signRF* (-y-x-rz);
+    *leftBack = H_MUL * signLB * (-y-x+rz);
+    *rightBack = H_MUL * signRB * (-y+x-rz);
+  }
 }
 
 //function to set all servos values

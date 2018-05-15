@@ -21,7 +21,7 @@
 #define escPin_8 9
 
 /*Multiplicative constants*/
-#define K_ANG 200             // P control constant
+#define K_ANG 1500            // P control constant
 #define H_MUL 200             // front-back movement
 #define V_MUL 100             // up-down movement
 #define FAST_V 70             // up-down turbo
@@ -37,12 +37,17 @@
 RBD::Timer timer;         //needed for the IMU reading process: it tells us when a certain timeout is expired 
 //sensors variables
 MS5837 pressure;
-int start;  //start-stop variable
+int start = 0, valLF, valRF, valLB, valRB, prSpi;                       //values of horizontal movement
 float reqPress, curPress, curTemp, pitch, roll;    //sensors values
+char ver[3]; //bit check for spi (1 0 1)
+
 
 //setup function
 void setup(){
   initI2C();              //IMU communication protocol initialization
+
+  ver[0] = ver[2] = 1;
+  ver[1] = 0;
   
   //set the ESC Servos pins in the right way
   initEscServos(escPin_1, escPin_2, escPin_3, escPin_4, escPin_5, escPin_6, escPin_7, escPin_8);
@@ -67,23 +72,22 @@ void setup(){
 //loop function
 void loop(){
   //array for vertical motors values
-  static int vertical[4] = {0, 0, 0, 0};
-  //values of horizontal movement
-  static int valLF=0, valRF=0, valLB=0, valRB=0;
+  int vertical[4] = {0, 0, 0, 0};
 
  /* if(curTemp>=MAX_TEMP) //safe check on temperature. We hope we'll never need that
     stopRov();*/
     
   if(isTime()) {                            //if the IMU timer is expired
     dataRead();     // read angles, pressure, temperature and prepare it for spi
+  }
+  
+  if(start){                            //if the ROV is started
 #ifdef TEST                                     //if we are in water
     evaluateVertical(K_ANG, K_DEP, vertical);   //then evaluate vertical values for autostabilization and autoquote
 #else                                           //else, if we aren't,
     evaluateVertical(0, 0, vertical);           //then evaluate them just for joystick up/down
 #endif
-  }
-  
-  if(start){                            //if the ROV is started
+
     evaluateHorizontal(&valLF, &valRF, &valLB, &valRB);           //evaluate values for horizontal movement
 
     //set new motors powers

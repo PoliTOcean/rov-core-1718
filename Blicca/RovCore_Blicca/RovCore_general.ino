@@ -3,6 +3,7 @@ void startRov(){
   start=1; //set start flag to 1
 
   //Actions when started
+  curPress = readPress();
   saveRequestedPressure();
 }
 

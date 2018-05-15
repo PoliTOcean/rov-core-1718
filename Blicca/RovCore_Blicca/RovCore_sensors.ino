@@ -1,13 +1,13 @@
 //sensors functions
 int readPress(){
   pressure.read();            // say to sensor to read
-  return pressure.pressure(); //return read value
-//  return 0;
+//  return pressure.pressure(); //return read value
+  return 0;
 }
 
 //save the requested pressure
 void saveRequestedPressure(){
-  reqPress = curPress;
+  reqPress = readPress();
   savePressure = 0;
 }
 

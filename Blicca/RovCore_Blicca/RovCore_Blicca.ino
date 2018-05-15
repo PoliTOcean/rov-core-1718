@@ -25,7 +25,7 @@
 #define H_MUL 200             // front-back movement
 #define V_MUL 100             // up-down movement
 #define FAST_V 70             // up-down turbo
-#define K_DEP 50              // autoquote
+#define K_DEP 1              // autoquote
 
 /*Saturation contanst*/
 #define MAX_IMU 80            // max speed from imu command (it will be counted twice: once for roll and once for pitch)

@@ -3,8 +3,7 @@ void startRov(){
   start=1; //set start flag to 1
 
   //Actions when started
-  curPress = readPress();     //read pressure
-  saveRequestedPressure();    //and save it as the requested one
+  saveRequestedPressure();
 }
 
 //ROV stop function
