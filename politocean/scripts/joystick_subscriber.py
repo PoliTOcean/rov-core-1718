@@ -145,7 +145,7 @@ def main():
         values.roll = resp[0]-127
         values.pitch = resp[1]-127
         values.pressure = resp[2]
-        values.temperature = (resp[3]&0b00011111) + 20
+        values.temperature = (resp[3]&0b00011111)*2 + 20
         
         if reset:
             publishComponent(NODE.ROV, ID.ATMEGA, STATUS.DISABLED)

@@ -16,9 +16,9 @@ void dataRead(){
   curPress = readPress();                 //read pressure
   if(curTemp < 20)
     curTemp = 20;
-  else if(curTemp > 51)
-    curTemp = 51;
-  op = (curTemp-20); // tempertaure from 20°C to 51°C -> 5 bit
+  else if(curTemp > 83)
+    curTemp = 83;
+  op = (curTemp-20)/2; // tempertaure from 20°C to 83°C -> 5 bit with 2°C of resolution
   bitWrite(op,5,1);
   bitWrite(op,6,0);
   bitWrite(op,7,1);
