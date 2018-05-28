@@ -7,7 +7,7 @@
 
 /*Important values initialization*/
 #define IMU_ADDR 0x68         // IMU IMU_ADDRess
-#define STOP 1500             // frequency for a still rotor
+#define STOP 1500             // frequency for a still rotor (1500 rapresents our '0' value --> [1100 to 1900])
 #define dt 0.01               // IMU timer timeout in seconds  (10ms)
 
 //esc servos pins

@@ -91,7 +91,7 @@ int linSaturation(int value, int MAX_VAL) {
 
 //function to set power (int value) to Servos, using the above function linSaturation(int,int)
 void setServoMicroseconds(Servo s, int value, int MAX_VAL) {
-  s.writeMicroseconds(STOP + linSaturation(value, MAX_VAL));
+  s.writeMicroseconds(STOP + linSaturation(value, MAX_VAL)); //give to the servo the PWM period --> i.e. velocity (STOP=1500)
 }
 
 //function to set right pins to the ESC Servos
@@ -127,7 +127,8 @@ float calcRollPower(float kAng){
 }
 
 //function to evaluate vertical motors values
-void evaluateVertical(float kAng, float kDep, int vertical[4]){
+void evaluateVertical(float kAng, float kDep, int vertical[4])
+{
  if(trigger)
  {
   up = 1;
@@ -165,10 +166,10 @@ void evaluateVertical(float kAng, float kDep, int vertical[4]){
   vertical[3] = linSaturation(pitchPower, MAX_IMU);
 
   //adding values for roll
-  vertical[0] -= linSaturation(rollPower, MAX_IMU);
+  vertical[0] += linSaturation(rollPower, MAX_IMU);
   vertical[1] += linSaturation(rollPower, MAX_IMU);
   vertical[2] -= linSaturation(rollPower, MAX_IMU);
-  vertical[3] += linSaturation(rollPower, MAX_IMU);
+  vertical[3] -= linSaturation(rollPower, MAX_IMU);
 
   //value for up-down movement
   valUD=0;            //reset valUD

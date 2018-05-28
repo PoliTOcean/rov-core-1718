@@ -15,7 +15,7 @@ void initI2C(){
 }
 
 //function for IMU data calculations
-void ComplementaryFilter(float accData[3], float gyrData[3])
+void ComplementaryFilter(float accData[3], float gyrData[3]) //data are read from imu and passed here to compute the angle
 {
     float pitchAcc, rollAcc, droll, dpitch, dyaw;
     float cdr, cdp, cdy, cr, cp;
@@ -54,7 +54,7 @@ void ComplementaryFilter(float accData[3], float gyrData[3])
     }
 }
 
-//function to read IMU data
+//function to read IMU data --> data are then sended to the complementary filter function
 void imuRead() {
   float accData[3], gyroData[3];
   int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
