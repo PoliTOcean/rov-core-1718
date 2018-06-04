@@ -3,7 +3,6 @@
 import RPi.GPIO as GPIO
 import rospy
 from std_msgs.msg import String
-from std_msgs.msg import Bool
 from politocean.msg import *
 from time import sleep
 from errmess_publisher import *
@@ -49,8 +48,6 @@ def Rotate_CCW():
         sleep(delay_new)
         
 def joystickButtCallback(data):
-    global wrist_status_pub
-    
     global e_butt
     global c_butt
     global cont
@@ -59,7 +56,7 @@ def joystickButtCallback(data):
         e_butt = data.status
     if data.ID == "c_butt" and data.status == True :
         cont = not cont #cambio il valore ogni volta che il pulsante trigghera verso l'alto
-        wrist_status_pub.publish(cont)
+        publishComponent("Polso", "wrist", cont)
 	
 
 def joystickAxisCallback(data):
@@ -70,8 +67,6 @@ def joystickAxisCallback(data):
     
         
 def main():
-    global wrist_status_pub
-    
     global e_butt
     global ry
     global cont
@@ -86,8 +81,6 @@ def main():
     #subscriber
     joystick_butt_sub = rospy.Subscriber("joystick_buttons", joystick_buttons, joystickButtCallback)
     joystick_axis_sub = rospy.Subscriber("joystick_axis", joystick_axis, joystickAxisCallback)
-    wrist_status_pub = rospy.Publisher('wrist_status', Bool, queue_size=0)
-
     
     errMessInit() #init topics
     
