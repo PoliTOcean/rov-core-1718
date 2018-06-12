@@ -91,7 +91,7 @@ int linSaturation(int value, int MAX_VAL) {
 
 //function to set power (int value) to Servos, using the above function linSaturation(int,int)
 void setServoMicroseconds(Servo s, int value, int MAX_VAL) {
-  s.writeMicroseconds(STOP + linSaturation(value, MAX_VAL)); //give to the servo the PWM period --> i.e. velocity (STOP=1500)
+  s.writeMicroseconds(STOP + linSaturation(value, MAX_VAL));
 }
 
 //function to set right pins to the ESC Servos
@@ -118,17 +118,16 @@ void initEscServos(byte pin1, byte pin2, byte pin3, byte pin4, byte pin5, byte p
 float calcPitchPower(float kAng){
   /* it takes the difference between current pitch and the requested one from the joystick
    * and multiplicates it for a multiplication constant, passed as parameter */
-  return kAng*(pitch-6*3.14/180); //(the angle is the orizontal due to the sensor inclination)
+  return kAng*(pitch+(15.0*3.14/180)); //(the angle is the orizontal due to the sensor inclination)
 }
 
 //function for roll power calculation. Same as above, without sign inversion
 float calcRollPower(float kAng){
-  return kAng*(roll-3.14/180); //(the angle is the orizontal due to the sensor inclination)
+  return kAng*(roll+(5.0*3.14/180)); //(the angle is the orizontal due to the sensor inclination)
 }
 
 //function to evaluate vertical motors values
-void evaluateVertical(float kAng, float kDep, int vertical[4])
-{
+void evaluateVertical(float kAng, float kDep, int vertical[4]){
  if(trigger)
  {
   up = 1;
@@ -166,11 +165,11 @@ void evaluateVertical(float kAng, float kDep, int vertical[4])
   vertical[3] = linSaturation(pitchPower, MAX_IMU);
 
   //adding values for roll
-  vertical[0] += linSaturation(rollPower, MAX_IMU);
+  vertical[0] -= linSaturation(rollPower, MAX_IMU);
   vertical[1] += linSaturation(rollPower, MAX_IMU);
   vertical[2] -= linSaturation(rollPower, MAX_IMU);
-  vertical[3] -= linSaturation(rollPower, MAX_IMU);
-
+  vertical[3] += linSaturation(rollPower, MAX_IMU);
+  
   //value for up-down movement
   valUD=0;            //reset valUD
   if(down || up){         //controlled up-down from joystick
@@ -205,8 +204,8 @@ void setServosValues(int valLF, int valRF, int valLB, int valRB, int v0, int v1,
   //front/back
   setServoMicroseconds(T200_5, valLF, MAX_VALUE);
   setServoMicroseconds(T200_2, valRF, MAX_VALUE);
-  setServoMicroseconds(T200_3, -valLB, MAX_VALUE);
-  setServoMicroseconds(T200_6, -valRB, MAX_VALUE);
+  setServoMicroseconds(T200_3, valLB, MAX_VALUE);
+  setServoMicroseconds(T200_6, valRB, MAX_VALUE);
 
   //up/down
   setServoMicroseconds(T200_7, -v0, MAX_VALUE);
