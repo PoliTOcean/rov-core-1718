@@ -10,4 +10,4 @@ The last used code is RovCore_Alosa.
 
 The code has been subdivided in standalone functions in order to make them reusable.
 
-The resulting main code is a sequence of function calls, it is easly readable and understandable.
+The resulting main code is a sequence of function calls, it is readable and understandable.
