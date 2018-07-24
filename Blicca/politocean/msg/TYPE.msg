@@ -1,0 +1,4 @@
+int8 COMMAND = 0
+int8 MESSAGE = 1
+int8 ERROR = 2
+int8 UPDATE = 4

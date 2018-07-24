@@ -1,0 +1,30 @@
+<launch>
+    <include file="$(find politocean)/launches/video.launch" >
+    </include>
+
+    <node pkg="raspicam" name="raspicam_node" type="raspicam_node">
+    <param name="quality" value="5" />
+    <param name="fps" value="30" />
+    <param name="bitrate" value="15000000" />
+    <param name="mode" value="5" />
+    <param name="intra" value="1" />
+    </node>
+
+    <node pkg="politocean" name="joystick_subscriber" type="joystick_subscriber.py" respawn="true">
+    </node>
+
+    <node pkg="politocean" name="camera_servo" type="camera_servo.py" respawn="true">
+    </node>
+
+    <node pkg="politocean" name="arm" type="braccio.py" respawn="true">
+    </node>
+
+    <node pkg="politocean" name="wrist" type="polso.py" respawn="true">
+    </node>
+
+    <node pkg="politocean" name="claw" type="attuatore.py" respawn="true">
+    </node>
+
+    <node pkg="politocean" name="ultrasounds" type="ultrasounds.py" respawn="true">
+    </node>
+</launch>

@@ -1,0 +1,2 @@
+string JOYSTICK=JOY
+string ATMEGA=ATM

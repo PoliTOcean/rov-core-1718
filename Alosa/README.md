@@ -1,6 +1,6 @@
 # Alosa
 
-## First version of the ROV's C code (atMega code)
+## First version of the ROV's code (atMega code)
 
 ### RovCore_Alosa
 

@@ -1,9 +1,11 @@
 # rov-core
 
-Internal ROV software
+This is the repository related the internal ROV software.
 
-La cartella "politocean" è il package di ROS con gli script necessari per farlo funzionare.
+It is divided in releases + an _useful_stuff_ folder.
 
-Tutto ciò che non è il codice da mettere direttamente su Arduino o su ROS, è inserito dentro la cartella "usefull_stuff".
+The firs ROV we created had only one atMega, it code is inside the [Alosa folder](https://github.com/PoliTOcean/rov-core/tree/master/Alosa).
+
+The second ROV had one Raspberry with ROS and one atMega connected through SPI, all the codes are inside the [Blicca folder](https://github.com/PoliTOcean/rov-core/tree/master/Blicca).
 
 Enjoy!

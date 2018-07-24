@@ -1,0 +1,2 @@
+string ID
+bool status
