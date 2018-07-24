@@ -1,4 +1,0 @@
-int8 ENABLED=1
-int8 DISABLED=0
-int8 BUSY=-1
-int8 REQUEST=100

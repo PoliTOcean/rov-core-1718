@@ -1,2 +1,0 @@
-string ID
-bool status
